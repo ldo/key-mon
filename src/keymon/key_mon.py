@@ -188,6 +188,8 @@ class KeyMon:
       'META_EMPTY': [self.svg_name('meta'), self.svg_name('whiteout-58')],
       'ALT': [self.svg_name('alt')],
       'ALT_EMPTY': [self.svg_name('alt'), self.svg_name('whiteout-58')],
+      'ALTGR': [self.svg_name('altgr')],
+      'ALTGR_EMPTY': [self.svg_name('altgr'), self.svg_name('whiteout-58')],
       'KEY_EMPTY': [
           fix_svg_key_closure(self.svg_name('one-char-template'), [('&amp;', '')]),
               self.svg_name('whiteout-48')],
@@ -556,7 +558,7 @@ class KeyMon:
       image.switch_to_default()
 
   def is_shift_code(self, code):
-    if code in ('SHIFT', 'ALT', 'CTRL', 'META'):
+    if code in ('SHIFT', 'ALT', 'ALTGR', 'CTRL', 'META'):
       return True
     return False
 
@@ -579,7 +581,10 @@ class KeyMon:
                         ('KEY_SUPER', 'META'), ('KEY_MULTI_KEY', 'META')):
       if code.startswith(keysym):
         if self.enabled[img]:
-          self._handle_event(self.images[img], img, value)
+          if keysym == 'KEY_ISO_LEVEL3_SHIFT':
+            self._handle_event(self.images['ALT'], 'ALTGR', value)
+          else:
+            self._handle_event(self.images[img], img, value)
         return
     if code.startswith('KEY_KP'):
       letter = medium_name

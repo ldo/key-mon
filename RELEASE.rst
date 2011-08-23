@@ -22,6 +22,7 @@ Development
 * Fixed issue 86, fix create_moveresize_window error by manually handle window
   dragging.
 * Fixed issue 90, add two Turkish kbd files and missing codes to xlib.c.
+* Fixed issue 75, make AltGr show in Alt image place.
 
 August 4th, 2011 v 1.7
 ----------------------
