@@ -34,8 +34,6 @@ try:
 except ImportError:
   print('Error: Missing Xlib, run sudo apt-get install python3-xlib')
   sys.exit(-1)
-import Xlib.display
-import Xlib.protocol.event
 import gi
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
@@ -135,7 +133,8 @@ class KeyMon:
     self.modmap = mod_mapper.safely_read_mod_map(self.options.kbd_file, self.options.kbd_files)
 
     self.name_fnames = self.create_names_to_fnames()
-    self.display = Xlib.display.Display()
+    self.devices = Xlib.XEvents()
+    self.devices.start()
 
     self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames,
                                                          self.options.scale)
@@ -159,9 +158,9 @@ class KeyMon:
             self.destroy(None)
             return
           scancode = key_info[0]
-          event = Xlib.protocol.event.TBD('EV_KEY', scancode=scancode, code=key, value=1)
+          event = Xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
         elif key.startswith('BTN_'):
-          event = Xlib.protocol.event.TBD('EV_KEY', scancode=0, code=key, value=1)
+          event = Xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
 
         self.handle_event(event)
         while GLib.main_context_default().pending():
@@ -495,7 +494,7 @@ class KeyMon:
 
   def on_idle(self):
     """Check for events on idle."""
-    event = self.display.next_event()
+    event = self.devices.next_event()
     try:
       if event:
         self.handle_event(event)
@@ -708,12 +707,12 @@ class KeyMon:
 
   def quit_program(self, *unused_args):
     """Quit the program."""
-    self.display.close()
-    self.display = None
+    self.devices.stop_listening()
     self.destroy(None)
 
   def destroy(self, unused_widget, unused_data=None):
     """Also quit the program."""
+    self.devices.stop_listening()
     self.options.save()
     Gtk.main_quit()
 
