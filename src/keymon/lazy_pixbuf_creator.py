@@ -34,7 +34,6 @@ import os
 import sys
 import re
 import tempfile
-import types
 import gi
 gi.require_version("Gdk", "3.0")
 from gi.repository import \
@@ -77,7 +76,7 @@ class LazyPixbufCreator(object):
     ops = self.name_fnames[name]
     img = None
     for operation in ops:
-      if isinstance(operation, types.StringTypes):
+      if isinstance(operation, str):
         img = self._composite(img, self._read_from_file(operation))
       else:
         image_bytes = operation()
@@ -108,7 +107,7 @@ class LazyPixbufCreator(object):
     logging.debug('Read file %s', fname)
     if self.resize == 1.0:
       return GdkPixbuf.Pixbuf.new_from_file(fname)
-    fin = open(fname)
+    fin = open(fname, "rb")
     image_bytes = self._resize(fin.read())
     fin.close()
     return self._read_from_bytes(image_bytes)
@@ -135,11 +134,11 @@ class LazyPixbufCreator(object):
     """Resize the image by manipulating the svg."""
     if self.resize == 1.0:
       return image_bytes
-    template = r'(<svg[^<]+)(%s=")(\d+\.?\d*)'
-    image_bytes = self._resize_text(image_bytes, template % 'width')
-    image_bytes = self._resize_text(image_bytes, template % 'height')
-    image_bytes = image_bytes.replace('<g',
-        '<g transform="scale(%f, %f)"' % (self.resize, self.resize), 1)
+    template = br'(<svg[^<]+)(%s=")(\d+\.?\d*)'
+    image_bytes = self._resize_text(image_bytes, template % b'width')
+    image_bytes = self._resize_text(image_bytes, template % b'height')
+    image_bytes = image_bytes.replace(b'<g',
+        b'<g transform="scale(%f, %f)"' % (self.resize, self.resize), 1)
     return image_bytes
 
   def _resize_text(self, image_bytes, regular_exp):
@@ -149,6 +148,6 @@ class LazyPixbufCreator(object):
     if grps:
       num = float(grps.group(3))
       num = num * self.resize
-      replace = grps.group(1) + grps.group(2) + str(num)
+      replace = grps.group(1) + grps.group(2) + str(num).encode()
       image_bytes = re_x.sub(replace, image_bytes, 1)
     return image_bytes

@@ -61,15 +61,17 @@ def fix_svg_key_closure(fname, from_tos):
     A bound function which returns the file fname with modifications.
   """
 
+  from_tos = tuple((a.encode(), b.encode()) for a, b in from_tos)
+
   def fix_svg_key():
     """Given an SVG file return the SVG text fixed."""
     logging.debug('Read file %r', fname)
-    fin = open(fname)
+    fin = open(fname, "rb")
     fbytes = fin.read()
     fin.close()
     for fin, t in from_tos:
       # Quick XML escape fix
-      t = t.replace('<', '&lt;')
+      t = t.replace(b'<', b'&lt;')
       fbytes = fbytes.replace(fin, t)
     return fbytes
 
