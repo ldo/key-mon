@@ -50,8 +50,7 @@ class ShapedWindow(Gtk.Window):
 
     # a pixmap widget to contain the pixmap
     self.image = Gtk.Image()
-    bitmap, self.mask = self.pixbuf.render_pixmap_and_mask()
-    self.image.set_from_pixmap(bitmap, self.mask)
+    self.image.set_from_pixbuf(self.pixbuf)
     self.image.show()
     self.add(self.image)
 

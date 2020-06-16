@@ -436,17 +436,17 @@ class KeyMon:
 
     accelgroup = Gtk.AccelGroup()
     key, modifier = Gtk.accelerator_parse('<Control>q')
-    accelgroup.connect_group(key, modifier, Gtk.AccelFlags.VISIBLE, self.quit_program)
+    accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.quit_program)
 
     key, modifier = Gtk.accelerator_parse('<Control>s')
-    accelgroup.connect_group(key, modifier, Gtk.AccelFlags.VISIBLE, self.show_settings_dlg)
+    accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.show_settings_dlg)
     self.window.add_accel_group(accelgroup)
 
     if self.options.screenshot:
-      gobject.timeout_add(700, self.do_screenshot)
+      GObject.timeout_add(700, self.do_screenshot)
       return
 
-    gobject.idle_add(self.on_idle)
+    GObject.idle_add(self.on_idle)
 
   def button_released(self, unused_widget, evt):
     """A mouse button was released."""
@@ -462,7 +462,7 @@ class KeyMon:
       self.window.set_opacity(self.options.opacity)
       # remove no_press_timer
       if self.no_press_timer:
-        gobject.source_remove(self.no_press_timer)
+        GObject.source_remove(self.no_press_timer)
         self.no_press_timer = None
     return True
 
@@ -540,9 +540,9 @@ class KeyMon:
       self.window.show()
     self.window.set_opacity(self.options.opacity)
     if self.no_press_timer:
-      gobject.source_remove(self.no_press_timer)
+      GObject.source_remove(self.no_press_timer)
       self.no_press_timer = None
-    self.no_press_timer = gobject.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
+    self.no_press_timer = GObject.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
 
   def no_press_fadeout(self, begin=True):
     """Fadeout the window in a second
@@ -562,7 +562,7 @@ class KeyMon:
 
     if begin:
       # Recreate a new timer with 0.1 seccond interval
-      self.no_press_timer = gobject.timeout_add(100, self.no_press_fadeout)
+      self.no_press_timer = GObject.timeout_add(100, self.no_press_fadeout)
       # The current self.options.no_press_fadeout interval will not be timed
       # out again.
       return False
