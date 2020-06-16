@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -35,7 +35,7 @@ import time
 try:
   import xlib
 except ImportError:
-  print 'Error: Missing xlib, run sudo apt-get install python-xlib'
+  print('Error: Missing xlib, run sudo apt-get install python-xlib')
   sys.exit(-1)
 
 import options
@@ -148,7 +148,7 @@ class KeyMon:
         if key.startswith('KEY_'):
           key_info = self.modmap.get_from_name(key)
           if not key_info:
-            print 'Key %s not found' % key
+            print('Key %s not found' % key)
             self.destroy(None)
             return
           scancode = key_info[0]
@@ -160,8 +160,8 @@ class KeyMon:
         while gtk.events_pending():
           gtk.main_iteration(False)
         time.sleep(0.1)
-      except Exception, exp:
-        print exp
+      except Exception as exp:
+        print(exp)
     while gtk.events_pending():
       gtk.main_iteration(False)
     time.sleep(0.1)
@@ -175,7 +175,7 @@ class KeyMon:
         x, y, 0, 0, w, h)
     fname = 'screenshot.png'
     screenshot.save(fname, 'png')
-    print 'Saved screenshot %r' % fname
+    print('Saved screenshot %r' % fname)
     self.destroy(None)
 
   def create_names_to_fnames(self):
@@ -842,8 +842,8 @@ limitations under the License.''')
 
 def show_version():
   """Show the version number and author, used by help2man."""
-  print _('Keymon version %s.') % __version__
-  print _('Written by %s') % __author__
+  print(_('Keymon version %s.') % __version__)
+  print(_('Written by %s') % __author__)
 
 def create_options():
   opts = options.Options()
@@ -1009,24 +1009,24 @@ def main():
 
   opts.themes = settings.get_themes()
   if opts.list_themes:
-    print _('Available themes:')
-    print
+    print(_('Available themes:'))
+    print()
     theme_names = sorted(opts.themes)
     name_len = max(len(name) for name in theme_names)
     for theme in theme_names:
-      print (' - %%-%ds: %%s' % name_len) % (theme, opts.themes[theme][0])
+      print((' - %%-%ds: %%s' % name_len) % (theme, opts.themes[theme][0]))
     raise SystemExit()
   elif opts.theme and opts.theme not in opts.themes:
-    print _('Theme %r does not exist') % opts.theme
-    print
-    print _('Please make sure %r can be found in '
-            'one of the following directories:') % opts.theme
-    print
+    print(_('Theme %r does not exist') % opts.theme)
+    print()
+    print(_('Please make sure %r can be found in '
+            'one of the following directories:') % opts.theme)
+    print()
     for theme_dir in settings.get_config_dirs('themes'):
-      print ' - %s' % theme_dir
+      print(' - %s' % theme_dir)
     sys.exit(-1)
   if opts.reset:
-    print _('Resetting to defaults.')
+    print(_('Resetting to defaults.'))
     opts.reset_to_defaults()
     opts.save()
   keymon = KeyMon(opts)

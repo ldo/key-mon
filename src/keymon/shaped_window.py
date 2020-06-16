@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -56,7 +56,7 @@ class ShapedWindow(gtk.Window):
     win.shape_combine_mask(self.mask, 0, 0)
     win.set_property('skip-taskbar-hint', True)
     if not win.is_composited():
-      print 'Unable to fade the window'
+      print('Unable to fade the window')
     else:
       win.set_opacity(0.5)
 

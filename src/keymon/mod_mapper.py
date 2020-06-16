@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -319,7 +319,7 @@ def create_my_kdb(fname, codes):
       fout.write('%d %s %s %s\n' % (code, key, medium_name, short_name))
     else:
       fout.write('%d %s %s\n' % (code, key, medium_name))
-  print 'Output %r with %d entries' % (fname, len(codes))
+  print('Output %r with %d entries' % (fname, len(codes)))
   fout.close()
 
 def mod_map_args():
@@ -417,10 +417,10 @@ def _run_test():
   modmap = read_mod_map()
   create_my_kdb(filename, modmap)
   entries = read_kdb(filename)
-  print 'Read %r with %d entires' % (filename, len(entries))
+  print('Read %r with %d entires' % (filename, len(entries)))
   for ecode in modmap:
     if ecode not in entries:
-      print 'Missing entry for code %s' % ecode
+      print('Missing entry for code %s' % ecode)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -434,4 +434,4 @@ if __name__ == '__main__':
   o.parse_args('%prog [options]', sys.argv)
   io = StringIO.StringIO()
   o.write_ini(io)
-  print io.getvalue()
+  print(io.getvalue())

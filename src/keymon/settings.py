@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -294,7 +294,7 @@ class ButtonsFrame(CommonFrame):
 
 def _test_settings_changed(unused_widget):
   """Help to test if the settings change message is received."""
-  print 'Settings changed'
+  print('Settings changed')
 
 
 def manually_run_dialog():
