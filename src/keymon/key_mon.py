@@ -45,7 +45,6 @@ import settings
 import shaped_window
 import two_state_image
 
-from ConfigParser import SafeConfigParser
 
 gettext.install('key-mon', 'locale')
 

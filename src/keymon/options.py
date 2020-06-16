@@ -22,11 +22,11 @@ options from the command line.
 It behaves a little like optparse in that you can get or set the attributes by
 name.
 
-It uses ConfigParser to save the variables to disk in ini format.
+It uses configparser to save the variables to disk in ini format.
 """
 __author__ = 'Scott Kirkwood (scott+keymon@forusers.com)'
 
-import ConfigParser
+import configparser
 import gettext
 import logging
 import optparse
@@ -42,9 +42,9 @@ class OptionException(Exception):
 
 class OptionItem(object):
   """Handles on option.
-  It know both about optparse options and ConfigParser options.
+  It know both about optparse options and configparser options.
   By setting opt_short, opt_long to None you won't create an optparse option.
-  By setting ini_group, ini_name to None you won't create a ConfigParser option.
+  By setting ini_group, ini_name to None you won't create a configparser option.
   """
   def __init__(self, dest, _type, default, name, help,
       opt_group=None, opt_short=None, opt_long=None,
@@ -168,7 +168,7 @@ class OptionItem(object):
     elif self._type == 'float':
       setattr(self, attr, float(val))
     elif self._type == 'bool':
-      if isinstance(val, basestring):
+      if isinstance(val, str):
         if val.lower() in ('false', 'off', 'no', '0'):
           setattr(self, attr, False)
         elif val.lower() in ('true', 'on', 'yes', '1'):
@@ -317,7 +317,7 @@ class Options(object):
   def parse_ini(self, fp):
     """Parser an ini file from fp, which is file-like class."""
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.ConfigParser()
     config.readfp(fp)
     checker = {}
     for opt in self._options.values():
@@ -338,7 +338,7 @@ class Options(object):
   def write_ini(self, fp):
     """Parser an ini file from fp, which is file-like class."""
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.ConfigParser()
     for opt in self._options.values():
       if not opt.ini_group:
         continue

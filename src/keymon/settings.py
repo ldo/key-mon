@@ -24,7 +24,7 @@ import gtk
 import logging
 import os
 
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 
 LOG = logging.getLogger('settings')
 
@@ -344,7 +344,7 @@ def get_themes():
   for theme_dir in theme_dirs:
     for entry in sorted(os.listdir(theme_dir)):
       try:
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         theme_config = os.path.join(theme_dir, entry, 'config')
         parser.read(theme_config)
         desc = parser.get('theme', 'description')
