@@ -29,11 +29,6 @@ import sys
 import time
 import gettext
 import cairo
-try:
-  import Xlib
-except ImportError:
-  print('Error: Missing Xlib, run sudo apt-get install python3-xlib')
-  sys.exit(-1)
 import gi
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
@@ -44,6 +39,7 @@ from gi.repository import \
     GdkPixbuf, \
     Gtk
 
+from . import xlib
 from . import options
 from . import lazy_pixbuf_creator
 from . import mod_mapper
@@ -133,7 +129,7 @@ class KeyMon:
     self.modmap = mod_mapper.safely_read_mod_map(self.options.kbd_file, self.options.kbd_files)
 
     self.name_fnames = self.create_names_to_fnames()
-    self.devices = Xlib.XEvents()
+    self.devices = xlib.XEvents()
     self.devices.start()
 
     self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames,
@@ -158,9 +154,9 @@ class KeyMon:
             self.destroy(None)
             return
           scancode = key_info[0]
-          event = Xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
+          event = xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
         elif key.startswith('BTN_'):
-          event = Xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
+          event = xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
 
         self.handle_event(event)
         while GLib.main_context_default().pending():
