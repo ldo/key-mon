@@ -18,41 +18,43 @@
 
 __author__ = 'scott@forusers.com (Scott Kirkwood)'
 
-import gettext
-import gobject
-import gtk
-import logging
 import os
-
+import gettext
+import logging
 from configparser import ConfigParser
+import gi
+gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", "3.0")
+from gi.repository import \
+    GObject, \
+    Gtk
 
 LOG = logging.getLogger('settings')
 
-class SettingsDialog(gtk.Dialog):
+class SettingsDialog(Gtk.Dialog):
   """Create a settings/preferences dialog for keymon."""
 
   __gproperties__ = {}
   __gsignals__ = {
         'settings-changed' : (
-          gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+          GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
   }
 
   def __init__(self, unused_view, options):
-    gtk.Dialog.__init__(self, title='Preferences', parent=None,
-        flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT |
-        gtk.WIN_POS_MOUSE,
-        buttons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+    Gtk.Dialog.__init__(self, title='Preferences', parent=None,
+        flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, # no more gtk.WIN_POS_MOUSE?
+        buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
     self.options = options
     self.set_default_size(350, 350)
     self.connect('response', self._response)
-    self.notebook = gtk.Notebook()
+    self.notebook = Gtk.Notebook()
     self.vbox.pack_start(self.notebook)
 
     buttons = ButtonsFrame(self)
-    self.notebook.append_page(buttons, gtk.Label(_('Buttons')))
+    self.notebook.append_page(buttons, Gtk.Label(_('Buttons')))
 
     misc = MiscFrame(self)
-    self.notebook.append_page(misc, gtk.Label(_('Misc')))
+    self.notebook.append_page(misc, Gtk.Label(_('Misc')))
 
     self.notebook.show()
     self.show()
@@ -63,19 +65,19 @@ class SettingsDialog(gtk.Dialog):
 
   def _response(self, unused_dialog, response_id):
     """Wait for the close response."""
-    if response_id == gtk.RESPONSE_CLOSE:
+    if response_id == Gtk.ResponseType.CLOSE:
       LOG.info('Close in _Response.')
     self.destroy()
 
   @classmethod
   def register(cls):
     """Register this class as a Gtk widget."""
-    gobject.type_register(SettingsDialog)
+    GObject.type_register(SettingsDialog)
 
-class CommonFrame(gtk.Frame):
+class CommonFrame(Gtk.Frame):
   """Stuff common to several frames."""
   def __init__(self, settings):
-    gtk.Frame.__init__(self)
+    Gtk.Frame.__init__(self)
     self.settings = settings
     self.create_layout()
 
@@ -85,7 +87,7 @@ class CommonFrame(gtk.Frame):
 
   def _add_check(self, vbox, title, tooltip, option):
     """Add a check button."""
-    check_button = gtk.CheckButton(label=title)
+    check_button = Gtk.CheckButton(label=title)
     val = getattr(self.settings.options, option)
     logging.info('got option %s as %s', option, val)
     if val:
@@ -98,12 +100,12 @@ class CommonFrame(gtk.Frame):
 
   def _add_dropdown(self, vbox, title, tooltip, opt_lst, option, width_char=-1):
     """Add a drop down box."""
-    hbox = gtk.HBox()
-    label = gtk.Label(title)
+    hbox = Gtk.HBox()
+    label = Gtk.Label(title)
     label.set_tooltip_text(tooltip)
     hbox.pack_start(label, expand=False, fill=False)
 
-    combo = gtk.combo_box_entry_new_text()
+    combo = Gtk.ComboBoxText()
     combo.child.set_width_chars(width_char)
     for opt in opt_lst:
       combo.append_text(str(opt))
@@ -158,7 +160,7 @@ class MiscFrame(CommonFrame):
 
   def create_layout(self):
     """Create the box's layout."""
-    vbox = gtk.VBox()
+    vbox = Gtk.VBox()
     self._add_check(
         vbox, 
         _('Swap left-right mouse buttons'),
@@ -250,7 +252,7 @@ class ButtonsFrame(CommonFrame):
 
   def create_layout(self):
     """Create the layout for buttons."""
-    vbox = gtk.VBox()
+    vbox = Gtk.VBox()
 
     self._add_check(
         vbox,

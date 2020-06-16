@@ -18,15 +18,20 @@
 
 Thanks to mathias.gumz for the original code.
 """
-import gobject
-import gtk
 
-import lazy_pixbuf_creator
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import \
+    GObject, \
+    Gdk, \
+    Gtk
 
-class ShapedWindow(gtk.Window):
+from . import lazy_pixbuf_creator
+
+class ShapedWindow(Gtk.Window):
   """Create a window shaped as fname."""
   def __init__(self, fname, scale=1.0, timeout=0.2):
-    gtk.Window.__init__(self)
+    Gtk.Window.__init__(self)
     self.connect('size-allocate', self._on_size_allocate)
     self.set_decorated(False)
     self.set_keep_above(True)
@@ -44,7 +49,7 @@ class ShapedWindow(gtk.Window):
     self.resize(self.pixbuf.get_width(), self.pixbuf.get_height())
 
     # a pixmap widget to contain the pixmap
-    self.image = gtk.Image()
+    self.image = Gtk.Image()
     bitmap, self.mask = self.pixbuf.render_pixmap_and_mask()
     self.image.set_from_pixmap(bitmap, self.mask)
     self.image.show()
@@ -62,7 +67,7 @@ class ShapedWindow(gtk.Window):
 
   def center_on_cursor(self, x=None, y=None):
     if x is None or y is None:
-      root = gtk.gdk.screen_get_default().get_root_window()
+      root = Gdk.get_default_root_window()
       x, y, _ = root.get_pointer()
     w, h = self.get_size()
     new_x, new_y = x - w/2, y - h/2

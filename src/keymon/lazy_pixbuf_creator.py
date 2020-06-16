@@ -16,7 +16,7 @@
 
 """Create pixbuf on demand.
 
-This creates a gtk pixbuf in one of 2 manners:
+This creates a GTK pixbuf in one of 2 manners:
 1) Simple filename (probably supports most image formats)
 2) A function which returns bytes to a file which can be read by
    pixbuf_new_from_file().
@@ -29,15 +29,16 @@ Alpha transparencies from the new, overlayed, image are respected.
 
 __author__ = 'scott@forusers.com (Scott Kirkwood))'
 
-import pygtk
-pygtk.require('2.0')
-import gtk
 import logging
 import os
 import sys
 import re
 import tempfile
 import types
+import gi
+gi.require_version("Gdk", "3.0")
+from gi.repository import \
+    GdkPixbuf
 
 class LazyPixbufCreator(object):
   """Class to create SVG images on the fly."""
@@ -98,7 +99,7 @@ class LazyPixbufCreator(object):
           0, 0, img.props.width, img.props.height,  # x, y, w, h
           0, 0,  # offset x, y
           1.0, 1.0,  # scale x, y
-          gtk.gdk.INTERP_HYPER, 255)  # interpolation type, alpha
+          GdkPixbuf.InterpType.HYPER, 255)  # interpolation type, alpha
       return img
     return img2
 
@@ -106,7 +107,7 @@ class LazyPixbufCreator(object):
     """Read in the file in from fname."""
     logging.debug('Read file %s', fname)
     if self.resize == 1.0:
-      return gtk.gdk.pixbuf_new_from_file(fname)
+      return GdkPixbuf.Pixbuf.new_from_file(fname)
     fin = open(fname)
     image_bytes = self._resize(fin.read())
     fin.close()
@@ -114,11 +115,12 @@ class LazyPixbufCreator(object):
 
   def _read_from_bytes(self, image_bytes):
     """Writes the bytes to a file and then reads the file."""
+    # TODO: use direct new_from_bytes call instead
     fout, fname = tempfile.mkstemp(prefix='keymon-', suffix='.svg')
     os.write(fout, image_bytes)
     os.close(fout)
     try:
-      img = gtk.gdk.pixbuf_new_from_file(fname)
+      img = GdkPixbuf.Pixbuf.new_from_file(fname)
     except:
       logging.error('Unable to read %r: %s', fname, image_bytes)
       sys.exit(-1)

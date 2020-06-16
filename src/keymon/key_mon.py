@@ -24,27 +24,32 @@ __version__ = '1.19'
 
 import locale
 import logging
-import pygtk
-pygtk.require('2.0')
-import gettext
-import gobject
-import gtk
 import os
 import sys
 import time
+import gettext
+import cairo
 try:
-  import xlib
+  import Xlib
 except ImportError:
-  print('Error: Missing xlib, run sudo apt-get install python-xlib')
+  print('Error: Missing Xlib, run sudo apt-get install python3-xlib')
   sys.exit(-1)
+import gi
+gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", "3.0")
+from gi.repository import \
+    GObject, \
+    GLib, \
+    Gdk, \
+    GdkPixbuf, \
+    Gtk
 
-import options
-import lazy_pixbuf_creator
-import mod_mapper
-import settings
-import shaped_window
-import two_state_image
-
+from . import options
+from . import lazy_pixbuf_creator
+from . import mod_mapper
+from . import settings
+from . import shaped_window
+from . import two_state_image
 
 gettext.install('key-mon', 'locale')
 
@@ -126,7 +131,7 @@ class KeyMon:
     self.modmap = mod_mapper.safely_read_mod_map(self.options.kbd_file, self.options.kbd_files)
 
     self.name_fnames = self.create_names_to_fnames()
-    self.devices = xlib.XEvents()
+    self.devices = Xlib.XEvents()
     self.devices.start()
 
     self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames,
@@ -151,27 +156,27 @@ class KeyMon:
             self.destroy(None)
             return
           scancode = key_info[0]
-          event = xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
+          event = Xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
         elif key.startswith('BTN_'):
-          event = xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
+          event = Xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
 
         self.handle_event(event)
-        while gtk.events_pending():
-          gtk.main_iteration(False)
+        while GLib.main_context_default().pending():
+          GLib.main_context_default().iteration(False)
         time.sleep(0.1)
       except Exception as exp:
         print(exp)
-    while gtk.events_pending():
-      gtk.main_iteration(False)
+    while GLib.main_context_default().pending():
+      GLib.main_context_default().iteration(False)
     time.sleep(0.1)
     win = self.window
     x, y = win.get_position()
     w, h = win.get_size()
-    screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-        gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h),
-        gtk.gdk.get_default_root_window(),
-        gtk.gdk.colormap_get_system(),
-        x, y, 0, 0, w, h)
+    screenshot = Gdk.pixbuf_get_from_window \
+      (
+        Gdk.get_default_root_window(),
+        x, y, w, h
+      )
     fname = 'screenshot.png'
     screenshot.save(fname, 'png')
     print('Saved screenshot %r' % fname)
@@ -272,7 +277,7 @@ class KeyMon:
 
   def create_window(self):
     """Create the main window."""
-    self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    self.window = Gtk.Window()
     self.window.set_resizable(False)
 
     self.window.set_title('Keyboard Status Monitor')
@@ -292,13 +297,13 @@ class KeyMon:
     self.window.set_opacity(self.options.opacity)
     self.window.set_keep_above(True)
 
-    self.event_box = gtk.EventBox()
+    self.event_box = Gtk.EventBox()
     self.window.add(self.event_box)
     self.event_box.show()
 
     self.create_images()
 
-    self.hbox = gtk.HBox(False, 0)
+    self.hbox = Gtk.HBox(False, 0)
     self.event_box.add(self.hbox)
 
     self.layout_boxes()
@@ -338,22 +343,31 @@ class KeyMon:
     _, _, width, height = self.window.get_allocation()
     masks = [self.pixbufs.get(btn.current).render_pixmap_and_mask()[1] \
              for btn in btns]
-    shape_mask = gtk.gdk.Pixmap(None, width, height, masks[0].get_depth())
+    shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height) # not bothering to do equivalent of masks[0].get_depth()
 
-    gc = gtk.gdk.GC(shape_mask)
+    gc = cairo.Context(shape_mask)
     # Initialize the mask just in case masks of buttons can't fill the window,
     # if that happens, some artifacts will be seen usually at right edge.
-    gc.set_foreground(
-        gtk.gdk.Color(pixel=0) if self.options.backgroundless else \
-        gtk.gdk.Color(pixel=1))
-    shape_mask.draw_rectangle(gc, True, 0, 0, width, height)
+    gc.set_source_rgb \
+      (
+        Gdk.Color(pixel=0) if self.options.backgroundless else
+        Gdk.Color(pixel=1)
+      )
+    gc.new_path()
+    gc.rectangle(0, 0, width, height)
+    gc.fill()
 
     for btn_allocation, mask in zip(cache_id, masks):
       # Don't create mask until every image is allocated
       if btn_allocation[0] == -1:
         return
-      shape_mask.draw_drawable(gc, mask, 0, 0, *btn_allocation)
+      gc.set_source_surface(mask, 0, 0)
+      gc.new_path()
+      gc.rectangle(*btn_allocation)
+      gc.fill()
 
+    gc = None
+    shape_mask.flush()
     self.window.shape_combine_mask(shape_mask, 0, 0)
     self.shape_mask_current = cache_id
     self.shape_mask_cache[cache_id] = shape_mask
@@ -418,12 +432,12 @@ class KeyMon:
     self.window.connect('leave-notify-event', self.pointer_leave)
     self.event_box.connect('button_release_event', self.right_click_handler)
 
-    accelgroup = gtk.AccelGroup()
-    key, modifier = gtk.accelerator_parse('<Control>q')
-    accelgroup.connect_group(key, modifier, gtk.ACCEL_VISIBLE, self.quit_program)
+    accelgroup = Gtk.AccelGroup()
+    key, modifier = Gtk.accelerator_parse('<Control>q')
+    accelgroup.connect_group(key, modifier, Gtk.AccelFlags.VISIBLE, self.quit_program)
 
-    key, modifier = gtk.accelerator_parse('<Control>s')
-    accelgroup.connect_group(key, modifier, gtk.ACCEL_VISIBLE, self.show_settings_dlg)
+    key, modifier = Gtk.accelerator_parse('<Control>s')
+    accelgroup.connect_group(key, modifier, Gtk.AccelFlags.VISIBLE, self.show_settings_dlg)
     self.window.add_accel_group(accelgroup)
 
     if self.options.screenshot:
@@ -698,7 +712,7 @@ class KeyMon:
     """Also quit the program."""
     self.devices.stop_listening()
     self.options.save()
-    gtk.main_quit()
+    Gtk.main_quit()
 
   def right_click_handler(self, unused_widget, event):
     """Handle the right click button and show a menu."""
@@ -712,26 +726,26 @@ class KeyMon:
 
   def create_context_menu(self):
     """Create a context menu on right click."""
-    menu = gtk.Menu()
+    menu = Gtk.Menu()
 
-    toggle_chrome = gtk.CheckMenuItem(_('Window _Chrome'))
+    toggle_chrome = Gtk.CheckMenuItem(_('Window _Chrome'))
     toggle_chrome.set_active(self.window.get_decorated())
     toggle_chrome.connect_object('activate', self.toggle_chrome,
        self.window.get_decorated())
     toggle_chrome.show()
     menu.append(toggle_chrome)
 
-    settings_click = gtk.MenuItem(_('_Settings...\tCtrl-S'))
+    settings_click = Gtk.MenuItem(_('_Settings...\tCtrl-S'))
     settings_click.connect_object('activate', self.show_settings_dlg, None)
     settings_click.show()
     menu.append(settings_click)
 
-    about_click = gtk.MenuItem(_('_About...'))
+    about_click = Gtk.MenuItem(_('_About...'))
     about_click.connect_object('activate', self.show_about_dlg, None)
     about_click.show()
     menu.append(about_click)
 
-    quitcmd = gtk.MenuItem(_('_Quit\tCtrl-Q'))
+    quitcmd = Gtk.MenuItem(_('_Quit\tCtrl-Q'))
     quitcmd.connect_object('activate', self.destroy, None)
     quitcmd.show()
 
@@ -802,7 +816,7 @@ class KeyMon:
 
   def show_about_dlg(self, *_):
 
-    dlg = gtk.AboutDialog()
+    dlg = Gtk.AboutDialog()
     # Find the logo file
     logo_paths = (os.path.join(self.pathname, '../../icons'),)
     logo_paths += tuple(logo_path + '/share/pixmaps' for logo_path in (
@@ -812,7 +826,7 @@ class KeyMon:
     logo_paths = [logo_path + '/key-mon.xpm' for logo_path in logo_paths]
     for logo_path in logo_paths:
       if os.path.exists(logo_path):
-        dlg.set_logo(gtk.gdk.pixbuf_new_from_file(logo_path))
+        dlg.set_logo(GdkPixbuf.Pixbuf.new_from_file(logo_path))
         break
 
     dlg.set_name('Keyboard Status Monitor')
@@ -1030,7 +1044,7 @@ def main():
     opts.save()
   keymon = KeyMon(opts)
   try:
-    gtk.main()
+    Gtk.main()
   except KeyboardInterrupt:
     keymon.quit_program()
 
