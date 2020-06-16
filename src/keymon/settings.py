@@ -48,7 +48,7 @@ class SettingsDialog(Gtk.Dialog):
     self.set_default_size(350, 350)
     self.connect('response', self._response)
     self.notebook = Gtk.Notebook()
-    self.vbox.pack_start(self.notebook)
+    self.vbox.pack_start(self.notebook, False, False, 0)
 
     buttons = ButtonsFrame(self)
     self.notebook.append_page(buttons, Gtk.Label(_('Buttons')))
@@ -96,17 +96,17 @@ class CommonFrame(Gtk.Frame):
       check_button.set_active(False)
     check_button.connect('toggled', self._toggled, option)
     check_button.set_tooltip_text(tooltip)
-    vbox.pack_start(check_button, False, False)
+    vbox.pack_start(check_button, False, False, 0)
 
   def _add_dropdown(self, vbox, title, tooltip, opt_lst, option, width_char=-1):
     """Add a drop down box."""
     hbox = Gtk.HBox()
     label = Gtk.Label(title)
     label.set_tooltip_text(tooltip)
-    hbox.pack_start(label, expand=False, fill=False)
+    hbox.pack_start(label, expand=False, fill=False, padding=0)
 
     combo = Gtk.ComboBoxText()
-    combo.child.set_width_chars(width_char)
+    combo.set_wrap_width(width_char)
     for opt in opt_lst:
       combo.append_text(str(opt))
     val = getattr(self.settings.options, option)
@@ -125,7 +125,7 @@ class CommonFrame(Gtk.Frame):
     logging.info('got option %s as %s', option, val)
     combo.connect('changed', self._combo_changed, option)
 
-    vbox.pack_start(hbox, expand=False, fill=False)
+    vbox.pack_start(hbox, expand=False, fill=False, padding=0)
     return combo
 
   def _toggled(self, widget, option):
@@ -228,7 +228,7 @@ class MiscFrame(CommonFrame):
           'Default is 0.2'),
         timeouts, 'visible_click_timeout', 4)
 
-    self.themes = self.settings.options.themes.keys()
+    self.themes = list(self.settings.options.themes.keys())
     self._add_dropdown(
         vbox,
         _('Themes:'),

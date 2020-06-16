@@ -720,7 +720,7 @@ class KeyMon:
     menu = self.create_context_menu()
 
     menu.show()
-    menu.popup(None, None, None, event.button, event.time)
+    menu.popup(None, None, None, None, event.button, event.time)
 
   def create_context_menu(self):
     """Create a context menu on right click."""
