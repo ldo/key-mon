@@ -329,7 +329,7 @@ def mod_map_args():
 
 def run_cmd(args):
   """Run the command and collect the output."""
-  return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+  return subprocess.Popen(args, stdout=subprocess.PIPE, universal_newlines=True).communicate()[0]
 
 
 def read_mod_map():
