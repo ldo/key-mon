@@ -162,7 +162,7 @@ class MiscFrame(CommonFrame):
     """Create the box's layout."""
     vbox = Gtk.VBox()
     self._add_check(
-        vbox, 
+        vbox,
         _('Swap left-right mouse buttons'),
         _('Swap the left and the right mouse buttons'),
         'swap_buttons')
@@ -228,7 +228,7 @@ class MiscFrame(CommonFrame):
           'Default is 0.2'),
         timeouts, 'visible_click_timeout', 4)
 
-    self.themes = self.settings.options.themes.keys() 
+    self.themes = self.settings.options.themes.keys()
     self._add_dropdown(
         vbox,
         _('Themes:'),
@@ -364,6 +364,6 @@ def get_kbd_files():
       for d in config_dirs \
       for f in sorted(os.listdir(d)) if f.endswith('.kbd')]
   return kbd_files
-    
+
 if __name__ == '__main__':
   manually_run_dialog()

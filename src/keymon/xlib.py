@@ -62,7 +62,7 @@ class XEvent(object):
   value = property(get_value)
 
   def __str__(self):
-    return 'type:%s scancode:%s code:%s value:%s' % (self._type, 
+    return 'type:%s scancode:%s code:%s value:%s' % (self._type,
         self._scancode, self._code, self._value)
 
 class XEvents(threading.Thread):

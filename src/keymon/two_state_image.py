@@ -102,7 +102,7 @@ class TwoStateImage(Gtk.Image):
 
   def empty_event(self):
     """Sort of a idle event.
-    
+
     Returns True if image has been changed.
     """
     if self.count_down is None:
