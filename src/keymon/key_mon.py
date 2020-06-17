@@ -39,13 +39,13 @@ from gi.repository import \
     GdkPixbuf, \
     Gtk
 
-from . import xlib
-from . import options
-from . import lazy_pixbuf_creator
-from . import mod_mapper
-from . import settings
-from . import shaped_window
-from . import two_state_image
+from keymon import xlib
+from keymon import options
+from keymon import lazy_pixbuf_creator
+from keymon import mod_mapper
+from keymon import settings
+from keymon import shaped_window
+from keymon import two_state_image
 
 gettext.install('key-mon', 'locale')
 
