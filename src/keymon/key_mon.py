@@ -497,7 +497,7 @@ class KeyMon:
       else:
         for button in self.buttons:
           button.empty_event()
-      time.sleep(0.1)
+      time.sleep(0.01)
     except KeyboardInterrupt:
       self.quit_program()
       return False
