@@ -751,25 +751,25 @@ class KeyMon:
     """Create a context menu on right click."""
     menu = Gtk.Menu()
 
-    toggle_chrome = Gtk.CheckMenuItem(_('Window _Chrome'))
+    toggle_chrome = Gtk.CheckMenuItem(label = _('Window _Chrome'))
     toggle_chrome.set_active(self.window.get_decorated())
-    toggle_chrome.connect_object('activate', self.toggle_chrome,
+    toggle_chrome.connect_data('activate', self.toggle_chrome,
        self.window.get_decorated())
     toggle_chrome.show()
     menu.append(toggle_chrome)
 
-    settings_click = Gtk.MenuItem(_('_Settings...\tCtrl-S'))
-    settings_click.connect_object('activate', self.show_settings_dlg, None)
+    settings_click = Gtk.MenuItem(label = _('_Settings...\tCtrl-S'))
+    settings_click.connect_data('activate', self.show_settings_dlg, None)
     settings_click.show()
     menu.append(settings_click)
 
-    about_click = Gtk.MenuItem(_('_About...'))
-    about_click.connect_object('activate', self.show_about_dlg, None)
+    about_click = Gtk.MenuItem(label = _('_About...'))
+    about_click.connect_data('activate', self.show_about_dlg, None)
     about_click.show()
     menu.append(about_click)
 
-    quitcmd = Gtk.MenuItem(_('_Quit\tCtrl-Q'))
-    quitcmd.connect_object('activate', self.destroy, None)
+    quitcmd = Gtk.MenuItem(label = _('_Quit\tCtrl-Q'))
+    quitcmd.connect_data('activate', self.destroy, None)
     quitcmd.show()
 
     menu.append(quitcmd)

@@ -42,9 +42,9 @@ class SettingsDialog(Gtk.Dialog):
 
   def __init__(self, unused_view, options):
     Gtk.Dialog.__init__(self, title='Preferences', parent=None,
-        flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, # no more gtk.WIN_POS_MOUSE?
-        buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+        modal = True, destroy_with_parent = True) # no more gtk.WIN_POS_MOUSE?
     self.options = options
+    self.add_button(_("Close"), Gtk.ResponseType.CLOSE)
     self.set_default_size(350, 350)
     self.connect('response', self._response)
     self.notebook = Gtk.Notebook()
