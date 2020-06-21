@@ -775,7 +775,7 @@ class KeyMon:
     menu.append(quitcmd)
     return menu
 
-  def toggle_chrome(self, current):
+  def toggle_chrome(self, unused_widget, current):
     """Toggle whether the window has chrome or not."""
     self.window.set_decorated(not current)
     self.options.decorated = not self.options.decorated
