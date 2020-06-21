@@ -98,8 +98,8 @@ class CommonFrame(Gtk.Frame):
     check_button.set_tooltip_text(tooltip)
     vbox.pack_start(check_button, False, False, 0)
 
-  def _add_dropdown(self, vbox, title, tooltip, opt_lst, option, width_char=-1):
-    """Add a drop down box that selects from a set of float values."""
+  def _add_dropdown(self, vbox, title, tooltip, opt_lst, option, conv, width_char=-1):
+    """Add a drop down box that selects from a set of values."""
     hbox = Gtk.HBox()
     label = Gtk.Label(title)
     label.set_tooltip_text(tooltip)
@@ -111,7 +111,7 @@ class CommonFrame(Gtk.Frame):
       combo.append_text(str(opt))
     val = getattr(self.settings.options, option)
     try:
-      index = tuple(float(f) for f in opt_lst).index(val)
+      index = tuple(conv(f) for f in opt_lst).index(val)
     except ValueError:
       index = 0
     combo.set_active(index)
@@ -199,7 +199,7 @@ class MiscFrame(CommonFrame):
         _('Scale:'),
         _('How much larger or smaller than normal to make key-mon. '
           'Where 1.0 is normal sized.'),
-        sizes, 'scale', 4)
+        sizes, 'scale', float, 4)
 
     timeouts = ['0.2', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2',
             '1.4', '1.6', '1.8', '2.0', '2.5', '3.0', '3.5', '4.0']
@@ -208,28 +208,28 @@ class MiscFrame(CommonFrame):
         _('Key timeout:'),
         _('How long before activated key buttons disappear. '
           'Default is 0.5'),
-        timeouts, 'key_timeout', 4)
+        timeouts, 'key_timeout', float, 4)
 
     self._add_dropdown(
         vbox,
         _('Mouse timeout:'),
         _('How long before activated mouse buttons disappear. '
           'Default is 0.2'),
-        timeouts, 'mouse_timeout', 4)
+        timeouts, 'mouse_timeout', float, 4)
 
     self._add_dropdown(
         vbox,
         _('Highly visible click timeout:'),
         _('How long before highly visible click disappear. '
           'Default is 0.2'),
-        timeouts, 'visible_click_timeout', 4)
+        timeouts, 'visible_click_timeout', float, 4)
 
     self.themes = list(self.settings.options.themes.keys())
     self._add_dropdown(
         vbox,
         _('Themes:'),
         _('Which theme of buttons to show (ex. Apple)'),
-        self.themes, 'theme')
+        self.themes, 'theme', str)
 
     self.kbd_files = sorted(list(set(
         os.path.basename(kbd) for kbd in self.settings.options.kbd_files)))
@@ -237,7 +237,7 @@ class MiscFrame(CommonFrame):
         vbox,
         _('Keymap:'),
         _('Which keymap file to use'),
-        self.kbd_files, 'kbd_file')
+        self.kbd_files, 'kbd_file', str)
     self.add(vbox)
 
 class ButtonsFrame(CommonFrame):
@@ -279,14 +279,14 @@ class ButtonsFrame(CommonFrame):
         vbox,
         _('Old Keys:'),
         _('When typing fast show more than one key typed.'),
-        [0, 1, 2, 3, 4], 'old_keys')
+        [0, 1, 2, 3, 4], 'old_keys', int)
 
     fadeouts = ['0', '0.5', '1.0', '1.5', '2.0', '3.0', '4.0', '5.0']
     self._add_dropdown(
         vbox,
         _('Fade window after period (seconds).'),
         _('How long before window disappears after a click in seconds.'),
-        fadeouts, 'no_press_fadeout', 20)
+        fadeouts, 'no_press_fadeout', float, 20)
 
     self.add(vbox)
 
