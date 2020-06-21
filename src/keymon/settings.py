@@ -99,7 +99,7 @@ class CommonFrame(Gtk.Frame):
     vbox.pack_start(check_button, False, False, 0)
 
   def _add_dropdown(self, vbox, title, tooltip, opt_lst, option, width_char=-1):
-    """Add a drop down box."""
+    """Add a drop down box that selects from a set of float values."""
     hbox = Gtk.HBox()
     label = Gtk.Label(title)
     label.set_tooltip_text(tooltip)
@@ -110,12 +110,8 @@ class CommonFrame(Gtk.Frame):
     for opt in opt_lst:
       combo.append_text(str(opt))
     val = getattr(self.settings.options, option)
-    if isinstance(val, float):
-      str_val = '%0.3g' % val
-    else:
-      str_val = val
     try:
-      index = opt_lst.index(str_val)
+      index = tuple(float(f) for f in opt_lst).index(val)
     except ValueError:
       index = 0
     combo.set_active(index)
