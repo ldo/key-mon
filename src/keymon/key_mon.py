@@ -273,6 +273,22 @@ class KeyMon:
       })
     return ftn
 
+  def set_window_opacity(self, opacity) :
+    self.last_window_opacity = opacity
+    style = \
+        (
+            "window\n"
+            "  {\n"
+            "    opacity : %(opacity).3f;\n"
+            "  }\n"
+        %
+            {
+                "opacity" : opacity,
+            }
+        )
+    self.window_style_provider.load_from_data(style.encode())
+  #end set_window_opacity
+
   def create_window(self):
     """Create the main window."""
     self.window = Gtk.Window()
@@ -292,7 +308,11 @@ class KeyMon:
     if self.options.follow_mouse:
         self.mouse_follower_win.show()
 
-    self.window.set_opacity(self.options.opacity)
+    self.window_style_provider = Gtk.CssProvider()
+    self.window.get_style_context() \
+        .add_provider(self.window_style_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+    self.set_window_opacity(self.options.opacity)
     self.window.set_keep_above(True)
 
     self.event_box = Gtk.EventBox()
@@ -301,7 +321,7 @@ class KeyMon:
 
     self.create_images()
 
-    self.hbox = Gtk.HBox(False, 0)
+    self.hbox = Gtk.HBox(homogeneous = False, spacing = 0)
     self.event_box.add(self.hbox)
 
     self.layout_boxes()
@@ -439,10 +459,10 @@ class KeyMon:
     self.window.add_accel_group(accelgroup)
 
     if self.options.screenshot:
-      GObject.timeout_add(700, self.do_screenshot)
+      GLib.timeout_add(700, self.do_screenshot)
       return
 
-    GObject.idle_add(self.on_idle)
+    GLib.idle_add(self.on_idle)
 
   def button_released(self, unused_widget, evt):
     """A mouse button was released."""
@@ -455,10 +475,10 @@ class KeyMon:
     self.set_accept_focus(True)
     if evt.button == 1:
       self.move_dragged = widget.get_pointer()
-      self.window.set_opacity(self.options.opacity)
+      self.set_window_opacity(self.options.opacity)
       # remove no_press_timer
       if self.no_press_timer:
-        GObject.source_remove(self.no_press_timer)
+        GLib.source_remove(self.no_press_timer)
         self.no_press_timer = None
     return True
 
@@ -534,22 +554,22 @@ class KeyMon:
     if not self.window.get_property('visible'):
       self.window.move(self.options.x_pos, self.options.y_pos)
       self.window.show()
-    self.window.set_opacity(self.options.opacity)
+    self.set_window_opacity(self.options.opacity)
     if self.no_press_timer:
-      GObject.source_remove(self.no_press_timer)
+      GLib.source_remove(self.no_press_timer)
       self.no_press_timer = None
-    self.no_press_timer = GObject.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
+    self.no_press_timer = GLib.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
 
   def no_press_fadeout(self, begin=True):
     """Fadeout the window in a second
     Args:
       begin: indicate if this timeout is requested by handle_event.
     """
-    opacity = self.window.get_opacity() - self.options.opacity / 10.0
+    opacity = self.last_window_opacity - self.options.opacity / 10.0
     if opacity < 0.0:
       opacity = 0.0;
     logging.debug('Set opacity = %f' % opacity)
-    self.window.set_opacity(opacity)
+    self.set_window_opacity(opacity)
     if opacity == 0.0:
       self.window.hide()
       # No need to fade out more
@@ -558,7 +578,7 @@ class KeyMon:
 
     if begin:
       # Recreate a new timer with 0.1 seccond interval
-      self.no_press_timer = GObject.timeout_add(100, self.no_press_fadeout)
+      self.no_press_timer = GLib.timeout_add(100, self.no_press_fadeout)
       # The current self.options.no_press_fadeout interval will not be timed
       # out again.
       return False
