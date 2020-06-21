@@ -346,7 +346,7 @@ class KeyMon:
     btns = [btn for btn in self.buttons if btn.get_visible()]
     # Generate id to see if current mask needs to be updated, which is a tuple
     # of allocation of buttons.
-    cache_id = tuple(tuple(btn.get_allocation()) for btn in btns)
+    cache_id = tuple((a.x, a.y, a.width, a.height) for a in (btn.get_allocation(),) for btn in btns)
     if cache_id == self.shape_mask_current and not force:
       return
 
