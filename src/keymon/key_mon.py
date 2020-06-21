@@ -467,6 +467,8 @@ class KeyMon:
   def button_released(self, unused_widget, evt):
     """A mouse button was released."""
     if evt.button == 1:
+      self.set_window_opacity(self.options.opacity)
+      self.clear_no_press_timer()
       self.move_dragged = None
     return True
 
@@ -476,10 +478,7 @@ class KeyMon:
     if evt.button == 1:
       self.move_dragged = widget.get_pointer()
       self.set_window_opacity(self.options.opacity)
-      # remove no_press_timer
-      if self.no_press_timer:
-        GLib.source_remove(self.no_press_timer)
-        self.no_press_timer = None
+      self.clear_no_press_timer()
     return True
 
   def pointer_leave(self, unused_widget, unused_evt):
@@ -546,6 +545,13 @@ class KeyMon:
     elif event.code.startswith('REL'):
       self.handle_mouse_scroll(event.value, event.value)
 
+  def clear_no_press_timer(self) :
+    if self.no_press_timer:
+        GLib.source_remove(self.no_press_timer)
+        self.no_press_timer = None
+    #end if
+  #end clear_no_press_timer
+
   def reset_no_press_timer(self):
     """Initialize no_press_timer"""
     if not self.options.no_press_fadeout:
@@ -555,9 +561,7 @@ class KeyMon:
       self.window.move(self.options.x_pos, self.options.y_pos)
       self.window.show()
     self.set_window_opacity(self.options.opacity)
-    if self.no_press_timer:
-      GLib.source_remove(self.no_press_timer)
-      self.no_press_timer = None
+    self.clear_no_press_timer()
     self.no_press_timer = GLib.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
 
   def no_press_fadeout(self, begin=True):
@@ -710,6 +714,7 @@ class KeyMon:
     """Handle the mouse scroll button event."""
     if not self.enabled['MOUSE']:
       return
+    self.reset_no_press_timer()
     if direction == 'REL_RIGHT':
       self._handle_event(self.images['MOUSE'], 'REL_RIGHT', 1)
     elif direction == 'REL_LEFT':
