@@ -59,7 +59,9 @@ class ShapedWindow(Gtk.Window):
     def _on_size_allocate(self, win, unused_allocation):
         """Called when first allocated."""
         # Set the window shape
-        win.shape_combine_mask(self.mask, 0, 0)
+        #win.get_property("window").shape_combine_region(self.mask, 0, 0)
+          # FIXME: GTK 3 wants a Cairo region, but Cairo offers no function
+          # to generate a region from a bitmap.
         win.set_property('skip-taskbar-hint', True)
         if not win.is_composited():
             print('Unable to fade the window')
@@ -71,7 +73,7 @@ class ShapedWindow(Gtk.Window):
     def center_on_cursor(self, x=None, y=None):
         if x is None or y is None:
             root = Gdk.get_default_root_window()
-            x, y, _ = root.get_pointer()
+            _, x, y, _ = root.get_pointer()
         #end if
         w, h = self.get_size()
         new_x, new_y = x - w/2, y - h/2
@@ -86,7 +88,7 @@ class ShapedWindow(Gtk.Window):
         """Show this mouse indicator and ignore awaiting fade away request."""
         if self.timeout_timer and self.shown:
           # There is a fade away request, ignore it
-          gobject.source_remove(self.timeout_timer)
+          GObject.source_remove(self.timeout_timer)
           self.timeout_timer = None
           # This method only is called when mouse is pressed, so there will be a
           # release and fade_away call, no need to set up another timer.
@@ -105,7 +107,7 @@ class ShapedWindow(Gtk.Window):
         """Make the window fade in a little bit."""
         # TODO this isn't doing any fading out
         self.shown = False
-        self.timeout_timer = gobject.timeout_add(int(self.timeout * 1000), self.hide)
+        self.timeout_timer = GObject.timeout_add(int(self.timeout * 1000), self.hide)
     #end fade_away
 
 #end ShapedWindow

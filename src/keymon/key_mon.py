@@ -372,7 +372,7 @@ class KeyMon:
         # TODO limit number of cached masks
         shape_mask = self.shape_mask_cache.get(cache_id, None)
         if shape_mask and not force:
-            self.window.shape_combine_mask(shape_mask, 0, 0)
+            self.window.get_property("window").shape_combine_region(shape_mask, 0, 0)
             self.shape_mask_current = cache_id
             return
         #end if
@@ -406,7 +406,7 @@ class KeyMon:
 
         gc = None
         shape_mask.flush()
-        self.window.shape_combine_mask(shape_mask, 0, 0)
+        self.window.get_property("window").shape_combine_region(shape_mask, 0, 0)
         self.shape_mask_current = cache_id
         self.shape_mask_cache[cache_id] = shape_mask
     #end update_shape_mask
