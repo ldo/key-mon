@@ -103,11 +103,18 @@ class ShapedWindow(Gtk.Window):
         self.show()
     #end maybe_show
 
+    def delayed_hide(self) :
+        self.hide()
+        self.timeout_timer = None
+          # so I don’t try to remove expired timer
+        return False
+    #end delayed_hide
+
     def fade_away(self):
         """Make the window fade in a little bit."""
         # TODO this isn't doing any fading out
         self.shown = False
-        self.timeout_timer = GObject.timeout_add(int(self.timeout * 1000), self.hide)
+        self.timeout_timer = GObject.timeout_add(int(self.timeout * 1000), self.delayed_hide)
     #end fade_away
 
 #end ShapedWindow
