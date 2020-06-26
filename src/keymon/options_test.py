@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import io
 import unittest
 import options
-import StringIO
 
 class TestOptionItem(unittest.TestCase):
 
@@ -193,8 +193,8 @@ class TestOptions(unittest.TestCase):
         lines.append('x = 0')
         lines.append('true = 0')
         lines.append('false = 1')
-        io = StringIO.StringIO('\n'.join(lines))
-        self.options.parse_ini(io)
+        inout = io.StringIO('\n'.join(lines))
+        self.options.parse_ini(inout)
         self.options.parse_args("Usage", [])
 
         o = self.options
@@ -215,8 +215,8 @@ class TestOptions(unittest.TestCase):
         lines.append('x = 0')
         lines.append('true = 0')
         lines.append('false = 1')
-        io = StringIO.StringIO('\n'.join(lines))
-        self.options.parse_ini(io)
+        inout = io.StringIO('\n'.join(lines))
+        self.options.parse_ini(inout)
         args = \
             [
                 '--num99', '99',
@@ -236,9 +236,9 @@ class TestOptions(unittest.TestCase):
     #end test_override_ini
 
     def test_to_ini_empty(self):
-        io = StringIO.StringIO()
-        self.options.write_ini(io)
-        contents = io.getvalue()
+        inout = io.StringIO()
+        self.options.write_ini(inout)
+        contents = inout.getvalue()
         lines = []
         lines.append('[options]')
         lines.append('true = 1')
