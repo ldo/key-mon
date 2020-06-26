@@ -103,11 +103,20 @@ class LazyPixbufCreator:
           updated image.
         """
         if img:
-            img2.composite(img,
-                0, 0, img.props.width, img.props.height,  # x, y, w, h
-                0, 0,  # offset x, y
-                1.0, 1.0,  # scale x, y
-                GdkPixbuf.InterpType.HYPER, 255)  # interpolation type, alpha
+            img2.composite \
+              (
+                dest = img,
+                dest_x = 0,
+                dest_y = 0,
+                dest_width = img.props.width,
+                dest_height = img.props.height,
+                offset_x = 0,
+                offset_y = 0,
+                scale_x = 1.0,
+                scale_y = 1.0,
+                interp_type = GdkPixbuf.InterpType.HYPER,
+                overall_alpha = 255
+              )
             return img
         #end if
         return img2
@@ -151,8 +160,12 @@ class LazyPixbufCreator:
         template = br'(<svg[^<]+)(%s=")(\d+\.?\d*)'
         image_bytes = self._resize_text(image_bytes, template % b'width')
         image_bytes = self._resize_text(image_bytes, template % b'height')
-        image_bytes = image_bytes.replace(b'<g',
-            b'<g transform="scale(%f, %f)"' % (self.resize, self.resize), 1)
+        image_bytes = image_bytes.replace \
+          (
+            b'<g',
+            b'<g transform="scale(%f, %f)"' % (self.resize, self.resize),
+            1
+          )
         return image_bytes
     #end _resize
 

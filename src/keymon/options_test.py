@@ -21,11 +21,19 @@ import StringIO
 class TestOptionItem(unittest.TestCase):
 
     def test_create_int(self):
-        x = options.OptionItem(
-            dest='x', _type='int', default=-99,
-            name='namex', help='helpx',
-            opt_group='opt-group', opt_short='-x', opt_long='--xlong',
-            ini_group='ini_group', ini_name='ini_name')
+        x = options.OptionItem \
+          (
+            dest='x',
+            _type='int',
+            default=-99,
+            name='namex',
+            help='helpx',
+            opt_group='opt-group',
+            opt_short='-x',
+            opt_long='--xlong',
+            ini_group='ini_group',
+            ini_name='ini_name'
+          )
         self.assertEqual(x.value, -99)
         x.value = 2
         self.assertEqual(x.value, 2)
@@ -40,11 +48,19 @@ class TestOptionItem(unittest.TestCase):
     #end test_create_int
 
     def test_create_bool_false(self):
-        x = options.OptionItem(
-            dest='x', _type='bool', default=False,
-            name='namex', help='helpx',
-            opt_group='opt-group', opt_short='-x', opt_long='--xlong',
-            ini_group='group', ini_name='section')
+        x = options.OptionItem \
+          (
+            dest='x',
+            _type='bool',
+            default=False,
+            name='namex',
+            help='helpx',
+            opt_group='opt-group',
+            opt_short='-x',
+            opt_long='--xlong',
+            ini_group='group',
+            ini_name='section'
+          )
         self.assertFalse(x.value)
         x.value = True
         self.assertTrue(x.value)
@@ -69,10 +85,18 @@ class TestOptionItem(unittest.TestCase):
     #end test_create_bool_false
 
     def test_create_bool_none(self):
-        x = options.OptionItem(
-            opt_short='-x', opt_long='--xx', ini_group='group', ini_name='section',
-            dest='x', name='variable', help='variable help', _type='bool',
-            default=None)
+        x = options.OptionItem \
+          (
+            opt_short='-x',
+            opt_long='--xx',
+            ini_group='group',
+            ini_name='section',
+            dest='x',
+            name='variable',
+            help='variable help',
+            _type='bool',
+            default=None
+          )
         self.assertEqual(x.value, None)
         x.value = 0
         self.assertFalse(x.value)
@@ -86,26 +110,66 @@ class TestOptions(unittest.TestCase):
 
     def setUp(self):
         self.options = options.Options()
-        self.options.add_option('x', 'bool', None,
-            name='x variable', help='Help Varaible',
-            opt_short='-x', opt_long='--xx',
-            ini_group='options', ini_name='x')
-        self.options.add_option('tr', 'bool', True,
-            name='def true', help='Defaults to true',
-            opt_short='-t', opt_long='--true',
-            ini_group='options', ini_name='true')
-        self.options.add_option('fa', 'bool', False,
-            name='false variable', help='Defaults to false',
-            opt_short='-f', opt_long='--false',
-            ini_group='options', ini_name='false')
-        self.options.add_option('num', 'int', None,
-            name='num none', help='Number that returns None by default',
-            opt_short='-n', opt_long='--num',
-            ini_group='ints', ini_name='num')
-        self.options.add_option('num99', 'int', 99,
-            name='num 99', help='Number that defaults to 99',
-            opt_short=None, opt_long='--num99',
-            ini_group='ints', ini_name='num99')
+        self.options.add_option \
+          (
+            'x',
+            'bool',
+            None,
+            name='x variable',
+            help='Help Varaible',
+            opt_short='-x',
+            opt_long='--xx',
+            ini_group='options',
+            ini_name='x'
+          )
+        self.options.add_option \
+          (
+            'tr',
+            'bool',
+            True,
+            name='def true',
+            help='Defaults to true',
+            opt_short='-t',
+            opt_long='--true',
+            ini_group='options',
+            ini_name='true'
+          )
+        self.options.add_option \
+          (
+            'fa',
+            'bool',
+            False,
+            name='false variable',
+            help='Defaults to false',
+            opt_short='-f',
+            opt_long='--false',
+            ini_group='options',
+            ini_name='false'
+          )
+        self.options.add_option \
+          (
+            'num',
+            'int',
+            None,
+            name='num none',
+            help='Number that returns None by default',
+            opt_short='-n',
+            opt_long='--num',
+            ini_group='ints',
+            ini_name='num'
+          )
+        self.options.add_option \
+          (
+            'num99',
+            'int',
+            99,
+            name='num 99',
+            help='Number that defaults to 99',
+            opt_short=None,
+            opt_long='--num99',
+            ini_group='ints',
+            ini_name='num99'
+          )
     #end setUp
 
     def test_optparse(self):
@@ -153,13 +217,14 @@ class TestOptions(unittest.TestCase):
         lines.append('false = 1')
         io = StringIO.StringIO('\n'.join(lines))
         self.options.parse_ini(io)
-        args = [
-            '--num99', '99',
-            '--num', '456',
-            '--true',
-            '-x',
-            '--nofalse',
-        ]
+        args = \
+            [
+                '--num99', '99',
+                '--num', '456',
+                '--true',
+                '-x',
+                '--nofalse',
+            ]
         self.options.parse_args("Usage", args)
 
         o = self.options

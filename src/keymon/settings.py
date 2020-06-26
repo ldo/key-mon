@@ -35,14 +35,25 @@ class SettingsDialog(Gtk.Dialog):
     """Create a settings/preferences dialog for keymon."""
 
     __gproperties__ = {}
-    __gsignals__ = {
-          'settings-changed' : (
-            GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
-    }
+    __gsignals__ = \
+        {
+            'settings-changed' :
+                (
+                    GObject.SIGNAL_RUN_LAST,
+                    GObject.TYPE_NONE,
+                    (),
+                )
+        }
 
     def __init__(self, unused_view, options):
-        Gtk.Dialog.__init__(self, title='Preferences', parent=None,
-            modal = True, destroy_with_parent = True) # no more gtk.WIN_POS_MOUSE?
+        Gtk.Dialog.__init__ \
+          (
+            self,
+            title='Preferences',
+            parent=None,
+            modal = True,
+            destroy_with_parent = True
+          ) # no more gtk.WIN_POS_MOUSE?
         self.options = options
         self.add_button(_("Close"), Gtk.ResponseType.CLOSE)
         self.set_default_size(350, 350)
@@ -181,87 +192,132 @@ class MiscFrame(CommonFrame):
     def create_layout(self):
         """Create the box's layout."""
         vbox = Gtk.VBox()
-        self._add_check(
+        self._add_check \
+          (
             vbox,
             _('Swap left-right mouse buttons'),
             _('Swap the left and the right mouse buttons'),
-            'swap_buttons')
-        self._add_check(
+            'swap_buttons'
+          )
+        self._add_check \
+          (
             vbox,
             _('Left+right buttons emulates middle mouse button'),
             _('Clicking both mouse buttons emulates the middle mouse button.'),
-           'emulate_middle')
-        self._add_check(
+           'emulate_middle'
+          )
+        self._add_check \
+          (
             vbox,
             _('Highly visible click'),
             _('Show a circle when the users clicks.'),
-            'visible_click')
-        self._add_check(
+            'visible_click'
+          )
+        self._add_check \
+          (
             vbox,
             _('Window decoration'),
             _('Show the normal windows borders'),
-            'decorated')
-        self._add_check(
+            'decorated'
+          )
+        self._add_check \
+          (
             vbox,
             _('Window backgroundless'),
             _('Show only the buttons'),
-            'backgroundless')
-        self._add_check(
+            'backgroundless'
+          )
+        self._add_check \
+          (
             vbox,
             _('Only key combinations'),
             _('Show a key only when used with a modifier key (like Control)'),
-            'only_combo')
-        self._add_check(
+            'only_combo'
+          )
+        self._add_check \
+          (
             vbox,
             _('StickyKeys mode'),
             _('Make modifier keys be sticky'),
-            'sticky_mode')
+            'sticky_mode'
+          )
 
         sizes = ['1.0', '0.6', '0.8', '1.0', '1.2', '1.4', '1.6', '1.8']
-        self._add_dropdown(
+        self._add_dropdown \
+          (
             vbox,
             _('Scale:'),
-            _('How much larger or smaller than normal to make key-mon. '
-              'Where 1.0 is normal sized.'),
-            sizes, 'scale', float, 4)
+            _(
+              'How much larger or smaller than normal to make key-mon. '
+              'Where 1.0 is normal sized.'
+            ),
+            sizes,
+            'scale',
+            float,
+            4
+          )
 
-        timeouts = ['0.2', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2',
-                '1.4', '1.6', '1.8', '2.0', '2.5', '3.0', '3.5', '4.0']
-        self._add_dropdown(
+        timeouts = \
+            [
+                '0.2', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2',
+                '1.4', '1.6', '1.8', '2.0', '2.5', '3.0', '3.5', '4.0',
+            ]
+        self._add_dropdown \
+          (
             vbox,
             _('Key timeout:'),
-            _('How long before activated key buttons disappear. '
-              'Default is 0.5'),
-            timeouts, 'key_timeout', float, 4)
-
-        self._add_dropdown(
+            _('How long before activated key buttons disappear. Default is 0.5'),
+            timeouts,
+            'key_timeout',
+            float,
+            4
+          )
+        self._add_dropdown \
+          (
             vbox,
             _('Mouse timeout:'),
-            _('How long before activated mouse buttons disappear. '
-              'Default is 0.2'),
-            timeouts, 'mouse_timeout', float, 4)
+            _('How long before activated mouse buttons disappear. Default is 0.2'),
+            timeouts,
+            'mouse_timeout',
+            float,
+            4
+          )
 
-        self._add_dropdown(
+        self._add_dropdown \
+          (
             vbox,
             _('Highly visible click timeout:'),
-            _('How long before highly visible click disappear. '
-              'Default is 0.2'),
-            timeouts, 'visible_click_timeout', float, 4)
+            _('How long before highly visible click disappear. Default is 0.2'),
+            timeouts,
+            'visible_click_timeout',
+            float,
+            4
+          )
 
         self.themes = list(self.settings.options.themes.keys())
-        self._add_dropdown(
+        self._add_dropdown \
+          (
             vbox,
             _('Themes:'),
             _('Which theme of buttons to show (ex. Apple)'),
-            self.themes, 'theme', str)
+            self.themes,
+            'theme',
+            str
+          )
 
-        self.kbd_files = sorted(list(set(
-            os.path.basename(kbd) for kbd in self.settings.options.kbd_files)))
-        self._add_dropdown(
+        self.kbd_files = sorted \
+          (
+            set(os.path.basename(kbd) for kbd in self.settings.options.kbd_files)
+          )
+        self._add_dropdown \
+          (
             vbox,
             _('Keymap:'),
             _('Which keymap file to use'),
-            self.kbd_files, 'kbd_file', str)
+            self.kbd_files,
+            'kbd_file',
+            str
+          )
         self.add(vbox)
     #end create_layout
 
@@ -279,43 +335,62 @@ class ButtonsFrame(CommonFrame):
         """Create the layout for buttons."""
         vbox = Gtk.VBox()
 
-        self._add_check(
+        self._add_check \
+          (
             vbox,
             _('_Mouse'),
             _('Show the mouse.'),
-            'mouse')
-        self._add_check(
+            'mouse'
+          )
+        self._add_check \
+          (
             vbox,
             _('_Shift'),
             _('Show the shift key when pressed.'),
-            'shift')
-        self._add_check(
+            'shift'
+          )
+        self._add_check \
+          (
             vbox,
             _('_Ctrl'),
             _('Show the Control key when pressed.'),
-            'ctrl')
-        self._add_check(
+            'ctrl'
+          )
+        self._add_check \
+          (
             vbox,
             _('Meta (_windows keys)'),
             _('Show the Window\'s key (meta key) when pressed.'),
-            'meta')
-        self._add_check(
+            'meta'
+          )
+        self._add_check \
+          (
             vbox,
             _('_Alt'),
             _('Show the Alt key when pressed.'),
-            'alt')
-        self._add_dropdown(
+            'alt'
+          )
+        self._add_dropdown \
+          (
             vbox,
             _('Old Keys:'),
             _('When typing fast show more than one key typed.'),
-            [0, 1, 2, 3, 4], 'old_keys', int)
+            [0, 1, 2, 3, 4],
+            'old_keys',
+            int
+          )
 
         fadeouts = ['0', '0.5', '1.0', '1.5', '2.0', '3.0', '4.0', '5.0']
-        self._add_dropdown(
+        self._add_dropdown \
+          (
             vbox,
             _('Fade window after period (seconds).'),
             _('How long before window disappears after a click in seconds.'),
-            fadeouts, 'no_press_fadeout', float, 20)
+            fadeouts,
+            'no_press_fadeout',
+            float,
+            20
+          )
 
         self.add(vbox)
     #end create_layout
@@ -333,9 +408,11 @@ def manually_run_dialog():
 
     SettingsDialog.register()
     gettext.install('key_mon', 'locale')
-    logging.basicConfig(
+    logging.basicConfig \
+      (
         level=logging.DEBUG,
-        format = '%(filename)s [%(lineno)d]: %(levelname)s %(message)s')
+        format = '%(filename)s [%(lineno)d]: %(levelname)s %(message)s'
+      )
     options = key_mon.create_options()
     options.read_ini_file('~/.config/key-mon/config')
     dlg = SettingsDialog(None, options)
@@ -347,8 +424,12 @@ def manually_run_dialog():
 
 def get_config_dir():
     """Return the base directory of configuration."""
-    return os.environ.get('XDG_CONFIG_HOME',
-                          os.path.expanduser('~/.config')) + '/key-mon'
+    return \
+      (
+            os.environ.get('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
+        +
+            '/key-mon'
+      )
 #end get_config_dir
 
 def get_config_dirs(kind):
@@ -358,10 +439,16 @@ def get_config_dirs(kind):
     Return:
       List of full paths
     """
-    config_dirs = [d for d in (
-                os.path.join(get_config_dir(), kind),
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), kind)) \
-            if os.path.exists(d)]
+    config_dirs = \
+        [
+            d
+                for d in
+                    (
+                        os.path.join(get_config_dir(), kind),
+                        os.path.join(os.path.dirname(os.path.abspath(__file__)), kind)
+                    )
+            if os.path.exists(d)
+        ]
     return config_dirs
 #end get_config_dirs
 

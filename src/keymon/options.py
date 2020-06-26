@@ -104,8 +104,14 @@ class OptionItem:
         if self._opt_long:
             args.append(self._opt_long)
         #end if
-        parser.add_option(dest=self._dest, type=self._type, default=self._default,
-            help=self._help, *args)
+        parser.add_option \
+          (
+            dest=self._dest,
+            type=self._type,
+            default=self._default,
+            help=self._help,
+            *args
+          )
     #end add_to_parser
 
     def _add_bool_to_parser(self, parser):
@@ -117,9 +123,14 @@ class OptionItem:
         if self._opt_long:
             args.append(self._opt_long)
         #end if
-        parser.add_option(action='store_true', default=self._default,
-            dest=self._dest, help=self._help, *args)
-
+        parser.add_option \
+          (
+            action='store_true',
+            default=self._default,
+            dest=self._dest,
+            help=self._help,
+            *args
+          )
         if self._ini_group:
             # Only need the --no version if it could be saved to ini file.
             parser.add_option('--no' + self._opt_long.lstrip('-'),
@@ -345,10 +356,19 @@ class Options:
         #end if
 
         self._options_order.append(dest)
-        self._options[dest] = OptionItem(dest, type, default,
-            name, help,
-            opt_group=self._opt_group, opt_short=opt_short, opt_long=opt_long,
-            ini_group=ini_group, ini_name=ini_name)
+        self._options[dest] = OptionItem \
+          (
+            dest,
+            type,
+            default,
+            name,
+            help,
+            opt_group=self._opt_group,
+            opt_short=opt_short,
+            opt_long=opt_long,
+            ini_group=ini_group,
+            ini_name=ini_name
+          )
     #end add_option
 
     def parse_args(self, desc, args=None):
@@ -381,8 +401,7 @@ class Options:
                 if (config.has_section(opt.ini_group) and
                     config.has_option(opt.ini_group, opt.ini_name)):
                     opt.value = config.get(opt.ini_group, opt.ini_name)
-                    LOG.info('From ini getting %s.%s = %s', opt.ini_group, opt.ini_name,
-                        opt.value)
+                    LOG.info('From ini getting %s.%s = %s', opt.ini_group, opt.ini_name, opt.value)
                 #end if
             #end if
         #end for
@@ -462,38 +481,102 @@ class Options:
 
 if __name__ == '__main__':
     o = Options()
-    o.add_option(opt_short='-l', opt_long='--larger', dest='larger', default=False,
-                 type='bool',
-                 help='Make the dialog 25% larger than normal.')
-    o.add_option(opt_short='-m', opt_long='--meta', dest='meta', type='bool',
-                 ini_group='buttons', ini_name='meta', default=False,
-                 help='Show the meta (windows) key.')
-    o.add_option(opt_long='--scale', dest='scale', type='float', default=1.0,
-                 ini_group='ui', ini_name='scale',
-                 help='Scale the dialog. ex. 2.0 is 2 times larger, 0.5 is '
-                      'half the size. Defaults to %default')
-    o.add_option(opt_long='--kbdfile', dest='kbd_file',
-                 ini_group='devices', ini_name='map',
-                 default='us.kbd',
-                 help='Use this kbd filename instead running xmodmap.')
-    o.add_option(opt_short='-v', opt_long='--version', dest='version', type='bool',
-                 help='Show version information and exit.')
-    o.add_option(opt_short='-t', opt_long='--theme', dest='theme', type='str',
-                 ini_group='ui', ini_name='theme',
-                 help='The theme to use when drawing status images (ex. "-t apple").')
-    o.add_option(opt_long='--list-themes', dest='list_themes', type='bool',
-                 help='List available themes')
-    o.add_option(opt_long='--old-keys', dest='old_keys', type='int',
-                 ini_group='buttons', ini_name='old-keys',
-                 help='How many historical keypresses to show (defaults to %default)',
-                 default=0)
-    o.add_option(opt_short=None, opt_long=None, type='int',
-                 dest='x_pos', default=-1, help='Last X Position',
-                 ini_group='position', ini_name='x')
+    o.add_option \
+      (
+        opt_short='-l',
+        opt_long='--larger',
+        dest='larger',
+        default=False,
+        type='bool',
+        help='Make the dialog 25% larger than normal.'
+      )
+    o.add_option \
+      (
+        opt_short='-m',
+        opt_long='--meta',
+        dest='meta',
+        type='bool',
+        ini_group='buttons',
+        ini_name='meta',
+        default=False,
+        help='Show the meta (windows) key.'
+      )
+    o.add_option \
+      (
+        opt_long='--scale',
+        dest='scale',
+        type='float',
+        default=1.0,
+        ini_group='ui',
+        ini_name='scale',
+        help=
+            'Scale the dialog. ex. 2.0 is 2 times larger, 0.5 is '
+            'half the size. Defaults to %default'
+      )
+    o.add_option \
+      (
+        opt_long='--kbdfile',
+        dest='kbd_file',
+        ini_group='devices',
+        ini_name='map',
+        default='us.kbd',
+        help='Use this kbd filename instead running xmodmap.'
+      )
+    o.add_option \
+      (
+        opt_short='-v',
+        opt_long='--version',
+        dest='version',
+        type='bool',
+        help='Show version information and exit.'
+      )
+    o.add_option \
+      (
+        opt_short='-t',
+        opt_long='--theme',
+        dest='theme',
+        type='str',
+        ini_group='ui',
+        ini_name='theme',
+        help='The theme to use when drawing status images (ex. "-t apple").'
+      )
+    o.add_option \
+      (
+        opt_long='--list-themes',
+        dest='list_themes',
+        type='bool',
+        help='List available themes'
+      )
+    o.add_option \
+      (
+        opt_long='--old-keys',
+        dest='old_keys',
+        type='int',
+        ini_group='buttons',
+        ini_name='old-keys',
+        help='How many historical keypresses to show (defaults to %default)',
+        default=0
+      )
+    o.add_option \
+      (
+        opt_short=None,
+        opt_long=None,
+        type='int',
+        dest='x_pos',
+        default=-1,
+        help='Last X Position',
+        ini_group='position',
+        ini_name='x'
+      )
     o.add_option_group('Developer Options', 'Don\'t use')
-    o.add_option(opt_short='-d',
-                 opt_long='--debug', dest='debug', type='bool',
-                 help='Output debugging information.')
+    o.add_option \
+      (
+        opt_short='-d',
+        opt_long='--debug',
+        dest='debug',
+        type='bool',
+        help='Output debugging information.'
+      )
     lines = []
     lines.append('[ui]')
     lines.append('scale = 1.0')

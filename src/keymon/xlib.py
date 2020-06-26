@@ -68,8 +68,12 @@ class XEvent:
     value = property(get_value)
 
     def __str__(self):
-        return 'type:%s scancode:%s code:%s value:%s' % (self._type,
-            self._scancode, self._code, self._value)
+        return \
+          (
+                'type:%s scancode:%s code:%s value:%s'
+            %
+                (self._type, self._scancode, self._code, self._value)
+          )
     #end __str__
 
 #end XEvent
@@ -146,20 +150,24 @@ class XEvents(threading.Thread):
           sys.exit(1)
       #end if
       self._listening = True
-      self.ctx = self.record_display.record_create_context(
+      self.ctx = self.record_display.record_create_context \
+        (
           0,
           [record.AllClients],
-          [{
-              'core_requests': (0, 0),
-              'core_replies': (0, 0),
-              'ext_requests': (0, 0, 0, 0),
-              'ext_replies': (0, 0, 0, 0),
-              'delivered_events': (0, 0),
-              'device_events': (X.KeyPress, X.MotionNotify),  # why only two, it's a range?
-              'errors': (0, 0),
-              'client_started': False,
-              'client_died': False,
-          }])
+          [
+              {
+                  'core_requests': (0, 0),
+                  'core_replies': (0, 0),
+                  'ext_requests': (0, 0, 0, 0),
+                  'ext_replies': (0, 0, 0, 0),
+                  'delivered_events': (0, 0),
+                  'device_events': (X.KeyPress, X.MotionNotify),  # why only two, it's a range?
+                  'errors': (0, 0),
+                  'client_started': False,
+                  'client_died': False,
+              }
+          ]
+        )
 
       self.record_display.record_enable_context(self.ctx, self._handler)
 
@@ -192,8 +200,13 @@ class XEvents(threading.Thread):
           return
       data = reply.data
       while len(data):
-          event, data = rq.EventField(None).parse_binary_value(
-              data, self.record_display.display, None, None)
+          event, data = rq.EventField(None).parse_binary_value \
+            (
+              data,
+              self.record_display.display,
+              None,
+              None
+            )
           if event.type == X.ButtonPress:
               self._handle_mouse(event, 1)
           elif event.type == X.ButtonRelease:
@@ -217,19 +230,37 @@ class XEvents(threading.Thread):
         value: 2=motion, 1=down, 0=up
       """
       if value == 2:
-          self.events.append(XEvent('EV_MOV',
-              0, 0, (event.root_x, event.root_y)))
+          self.events.append \
+            (
+                XEvent('EV_MOV', 0, 0, (event.root_x, event.root_y))
+            )
       elif event.detail in [4, 5]:
           if event.detail == 5:
               value = -1
           else:
               value = 1
           #end if
-          self.events.append(XEvent('EV_REL',
-              0, XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail), value))
+          self.events.append \
+            (
+                XEvent
+                  (
+                    'EV_REL',
+                    0,
+                    XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
+                    value
+                  )
+            )
       else:
-          self.events.append(XEvent('EV_KEY',
-              0, XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail), value))
+          self.events.append \
+            (
+                XEvent
+                  (
+                    'EV_KEY',
+                    0,
+                    XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
+                    value
+                  )
+            )
       #end if
   #end _handle_mouse
 

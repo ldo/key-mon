@@ -97,9 +97,17 @@ class KeyMon:
           theme: Name of the theme to use to draw keys
         """
         settings.SettingsDialog.register()
-        self.btns = ['MOUSE', 'BTN_RIGHT', 'BTN_MIDDLE', 'BTN_MIDDLERIGHT',
-                     'BTN_LEFT', 'BTN_LEFTRIGHT', 'BTN_LEFTMIDDLE',
-                     'BTN_LEFTMIDDLERIGHT']
+        self.btns = \
+            [
+                'MOUSE',
+                'BTN_RIGHT',
+                'BTN_MIDDLE',
+                'BTN_MIDDLERIGHT',
+                'BTN_LEFT',
+                'BTN_LEFTRIGHT',
+                'BTN_LEFTMIDDLE',
+                'BTN_LEFTMIDDLERIGHT',
+            ]
         self.options = options
         self.pathname = os.path.dirname(os.path.abspath(__file__))
         if self.options.scale < 1.0:
@@ -134,8 +142,11 @@ class KeyMon:
         self.devices = xlib.XEvents()
         self.devices.start()
 
-        self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames,
-                                                             self.options.scale)
+        self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator \
+          (
+            name_fnames = self.name_fnames,
+            resize = self.options.scale
+          )
         self.create_window()
         self.reset_no_press_timer()
     #end __init__
@@ -198,34 +209,41 @@ class KeyMon:
           else:
               self.svg_size = ''
           #end if
-          ftn = {
-              'MOUSE': [self.svg_name('mouse'),],
-              'BTN_MIDDLE': [self.svg_name('mouse'), self.svg_name('middle-mouse')],
-              'SCROLL_UP': [self.svg_name('mouse'), self.svg_name('scroll-up-mouse')],
-              'SCROLL_DOWN': [self.svg_name('mouse'), self.svg_name('scroll-dn-mouse')],
+          ftn = \
+              {
+                  'MOUSE': [self.svg_name('mouse'),],
+                  'BTN_MIDDLE': [self.svg_name('mouse'), self.svg_name('middle-mouse')],
+                  'SCROLL_UP': [self.svg_name('mouse'), self.svg_name('scroll-up-mouse')],
+                  'SCROLL_DOWN': [self.svg_name('mouse'), self.svg_name('scroll-dn-mouse')],
 
-              'REL_LEFT': [self.svg_name('mouse'), self.svg_name('sroll-lft-mouse')],
-              'REL_RIGHT': [self.svg_name('mouse'), self.svg_name('scroll-rgt-mouse')],
-              'SHIFT': [self.svg_name('shift')],
-              'SHIFT_EMPTY': [self.svg_name('shift'), self.svg_name('whiteout-72')],
-              'CTRL': [self.svg_name('ctrl')],
-              'CTRL_EMPTY': [self.svg_name('ctrl'), self.svg_name('whiteout-58')],
-              'META': [self.svg_name('meta'), self.svg_name('meta')],
-              'META_EMPTY': [self.svg_name('meta'), self.svg_name('whiteout-58')],
-              'ALT': [self.svg_name('alt')],
-              'ALT_EMPTY': [self.svg_name('alt'), self.svg_name('whiteout-58')],
-              'ALTGR': [self.svg_name('altgr')],
-              'ALTGR_EMPTY': [self.svg_name('altgr'), self.svg_name('whiteout-58')],
-              'KEY_EMPTY': [
-                  fix_svg_key_closure(self.svg_name('one-char-template'), [('&amp;', '')]),
-                      self.svg_name('whiteout-48')],
-              'BTN_LEFTRIGHT': [
-                  self.svg_name('mouse'), self.svg_name('left-mouse'),
-                  self.svg_name('right-mouse')],
-              'BTN_LEFTMIDDLERIGHT': [
-                  self.svg_name('mouse'), self.svg_name('left-mouse'),
-                  self.svg_name('middle-mouse'), self.svg_name('right-mouse')],
-          }
+                  'REL_LEFT': [self.svg_name('mouse'), self.svg_name('sroll-lft-mouse')],
+                  'REL_RIGHT': [self.svg_name('mouse'), self.svg_name('scroll-rgt-mouse')],
+                  'SHIFT': [self.svg_name('shift')],
+                  'SHIFT_EMPTY': [self.svg_name('shift'), self.svg_name('whiteout-72')],
+                  'CTRL': [self.svg_name('ctrl')],
+                  'CTRL_EMPTY': [self.svg_name('ctrl'), self.svg_name('whiteout-58')],
+                  'META': [self.svg_name('meta'), self.svg_name('meta')],
+                  'META_EMPTY': [self.svg_name('meta'), self.svg_name('whiteout-58')],
+                  'ALT': [self.svg_name('alt')],
+                  'ALT_EMPTY': [self.svg_name('alt'), self.svg_name('whiteout-58')],
+                  'ALTGR': [self.svg_name('altgr')],
+                  'ALTGR_EMPTY': [self.svg_name('altgr'), self.svg_name('whiteout-58')],
+                  'KEY_EMPTY':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-char-template'), [('&amp;', '')]),
+                          self.svg_name('whiteout-48'),
+                      ],
+                  'BTN_LEFTRIGHT':
+                      [
+                          self.svg_name('mouse'), self.svg_name('left-mouse'),
+                          self.svg_name('right-mouse'),
+                      ],
+                  'BTN_LEFTMIDDLERIGHT':
+                      [
+                          self.svg_name('mouse'), self.svg_name('left-mouse'),
+                          self.svg_name('middle-mouse'), self.svg_name('right-mouse'),
+                      ],
+              }
           if self.options.swap_buttons:
               # swap the meaning of left and right
               left_str = 'right'
@@ -235,55 +253,118 @@ class KeyMon:
               right_str = 'right'
           #end if
 
-          ftn.update({
-              'BTN_RIGHT': [self.svg_name('mouse'),
-                self.svg_name('%s-mouse' % right_str)],
-              'BTN_LEFT': [self.svg_name('mouse'),
-                self.svg_name('%s-mouse' % left_str)],
-              'BTN_LEFTMIDDLE': [
-                  self.svg_name('mouse'), self.svg_name('%s-mouse' % left_str),
-                  self.svg_name('middle-mouse')],
-              'BTN_MIDDLERIGHT': [
-                  self.svg_name('mouse'), self.svg_name('middle-mouse'),
-                  self.svg_name('%s-mouse' % right_str)],
-          })
+          ftn.update \
+            (
+              {
+                  'BTN_RIGHT':
+                      [
+                          self.svg_name('mouse'),
+                          self.svg_name('%s-mouse' % right_str),
+                      ],
+                  'BTN_LEFT':
+                      [
+                          self.svg_name('mouse'),
+                          self.svg_name('%s-mouse' % left_str)
+                      ],
+                  'BTN_LEFTMIDDLE':
+                      [
+                          self.svg_name('mouse'),
+                          self.svg_name('%s-mouse' % left_str),
+                          self.svg_name('middle-mouse'),
+                      ],
+                  'BTN_MIDDLERIGHT':
+                      [
+                          self.svg_name('mouse'),
+                          self.svg_name('middle-mouse'),
+                          self.svg_name('%s-mouse' % right_str),
+                      ],
+              }
+            )
 
           if self.options.scale >= 1.0:
-            ftn.update({
-                'KEY_SPACE': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Space'), ('BOTTOM', '')])],
-                'KEY_TAB': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Tab'), ('BOTTOM', u'\u21B9')])],
-                'KEY_BACKSPACE': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Back'), ('BOTTOM', u'\u21fd')])],
-                'KEY_RETURN': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Enter'), ('BOTTOM', u'\u23CE')])],
-                'KEY_CAPS_LOCK': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Capslock'), ('BOTTOM', '')])],
-                'KEY_MULTI_KEY': [
-                    fix_svg_key_closure(self.svg_name('two-line-wide'),
-                    [('TOP', 'Compose'), ('BOTTOM', '')])],
-            })
+            ftn.update \
+              (
+                {
+                    'KEY_SPACE':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Space'), ('BOTTOM', '')]
+                              ),
+                        ],
+                    'KEY_TAB':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Tab'), ('BOTTOM', u'\u21B9')]
+                              )
+                        ],
+                    'KEY_BACKSPACE':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Back'), ('BOTTOM', u'\u21fd')]
+                              )
+                        ],
+                    'KEY_RETURN':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Enter'), ('BOTTOM', u'\u23CE')]
+                              )
+                        ],
+                    'KEY_CAPS_LOCK':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Capslock'), ('BOTTOM', '')]
+                              )
+                        ],
+                    'KEY_MULTI_KEY':
+                        [
+                            fix_svg_key_closure
+                              (
+                                self.svg_name('two-line-wide'),
+                                [('TOP', 'Compose'), ('BOTTOM', '')]
+                              )
+                        ],
+                }
+              )
           else:
-            ftn.update({
-                'KEY_SPACE': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Space')])],
-                'KEY_TAB': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Tab')])],
-                'KEY_BACKSPACE': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Back')])],
-                'KEY_RETURN': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Enter')])],
-                'KEY_CAPS_LOCK': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Capslck')])],
-                'KEY_MULTI_KEY': [
-                    fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Compose')])],
-            })
+              ftn.update \
+                (
+                  {
+                    'KEY_SPACE':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Space')]),
+                        ],
+                    'KEY_TAB':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Tab')]),
+                        ],
+                    'KEY_BACKSPACE':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Back')]),
+                        ],
+                    'KEY_RETURN':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Enter')]),
+                        ],
+                    'KEY_CAPS_LOCK':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Capslck')]),
+                        ],
+                    'KEY_MULTI_KEY':
+                        [
+                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Compose')]),
+                        ],
+                  }
+                )
           #end if
           return ftn
     #end create_names_to_fnames
@@ -314,12 +395,15 @@ class KeyMon:
         self.window.set_default_size(int(width), int(height))
         self.window.set_decorated(self.options.decorated)
 
-        self.mouse_indicator_win = shaped_window.ShapedWindow(
+        self.mouse_indicator_win = shaped_window.ShapedWindow \
+          (
             self.svg_name('mouse-indicator'),
-            timeout=self.options.visible_click_timeout)
-
-        self.mouse_follower_win = shaped_window.ShapedWindow(
-            self.svg_name('mouse-follower'))
+            timeout=self.options.visible_click_timeout
+          )
+        self.mouse_follower_win = shaped_window.ShapedWindow \
+          (
+            self.svg_name('mouse-follower')
+          )
         if self.options.follow_mouse:
             self.mouse_follower_win.show()
         #end if
@@ -364,7 +448,12 @@ class KeyMon:
         btns = [btn for btn in self.buttons if btn.get_visible()]
         # Generate id to see if current mask needs to be updated, which is a tuple
         # of allocation of buttons.
-        cache_id = tuple((a.x, a.y, a.width, a.height) for a in (btn.get_allocation(),) for btn in btns)
+        cache_id = tuple \
+          (
+            (a.x, a.y, a.width, a.height)
+            for btn in btns
+            for a in (btn.get_allocation(),)
+          )
         if cache_id == self.shape_mask_current and not force:
             return
 
@@ -378,9 +467,13 @@ class KeyMon:
         #end if
 
         _, _, width, height = self.window.get_allocation()
-        masks = [self.pixbufs.get(btn.current).render_pixmap_and_mask()[1] \
-                 for btn in btns]
-        shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height) # not bothering to do equivalent of masks[0].get_depth()
+        masks = \
+            [
+                self.pixbufs.get(btn.current).render_pixmap_and_mask()[1]
+                for btn in btns
+            ]
+        shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
+          # not bothering to do equivalent of masks[0].get_depth()
 
         gc = cairo.Context(shape_mask)
         # Initialize the mask just in case masks of buttons can't fill the window,
@@ -414,8 +507,12 @@ class KeyMon:
     def create_images(self):
         self.images['MOUSE'] = two_state_image.TwoStateImage(self.pixbufs, 'MOUSE')
         for img in self.MODS:
-            self.images[img] = two_state_image.TwoStateImage(
-                self.pixbufs, img + '_EMPTY', self.enabled[img])
+            self.images[img] = two_state_image.TwoStateImage \
+              (
+                pixbufs = self.pixbufs,
+                normal = img + '_EMPTY',
+                show = self.enabled[img]
+              )
         #end for
         self.create_buttons()
     #end create_images
@@ -617,7 +714,11 @@ class KeyMon:
         #end if
         self.set_window_opacity(self.options.opacity)
         self.clear_no_press_timer()
-        self.no_press_timer = GLib.timeout_add(int(self.options.no_press_fadeout * 1000), self.no_press_fadeout)
+        self.no_press_timer = GLib.timeout_add \
+          (
+            int(self.options.no_press_fadeout * 1000),
+            self.no_press_fadeout
+          )
     #end reset_no_press_timer
 
     def no_press_fadeout(self, begin=True):
@@ -637,7 +738,6 @@ class KeyMon:
             self.no_press_timer = None
             return False
         #end if
-
         if begin:
             # Recreate a new timer with 0.1 seccond interval
             self.no_press_timer = GLib.timeout_add(100, self.no_press_fadeout)
@@ -698,8 +798,7 @@ class KeyMon:
 
     def handle_key(self, scan_code, xlib_name, value):
         """Handle a keyboard event."""
-        code, medium_name, short_name = self.modmap.get_and_check(scan_code,
-                                                                  xlib_name)
+        code, medium_name, short_name = self.modmap.get_and_check(scan_code, xlib_name)
         if not code:
             logging.info('No mapping for scan_code %s', scan_code)
             return
@@ -707,15 +806,20 @@ class KeyMon:
         if self.options.scale < 1.0 and short_name:
             medium_name = short_name
         #end if
-        logging.debug('Scan code %s, Key %s pressed = %r', scan_code,
-                                                           code, medium_name)
+        logging.debug('Scan code %s, Key %s pressed = %r', scan_code, code, medium_name)
         if code in self.name_fnames:
             self._handle_event(self.key_image, code, value)
             return
         #end if
-        for keysym, img in (('KEY_SHIFT', 'SHIFT'), ('KEY_CONTROL', 'CTRL'),
-                            ('KEY_ALT', 'ALT'), ('KEY_ISO_LEVEL3_SHIFT', 'ALT'),
-                            ('KEY_SUPER', 'META')):
+        for keysym, img in \
+          (
+            ('KEY_SHIFT', 'SHIFT'),
+            ('KEY_CONTROL', 'CTRL'),
+            ('KEY_ALT', 'ALT'),
+            ('KEY_ISO_LEVEL3_SHIFT', 'ALT'),
+            ('KEY_SUPER', 'META'),
+          ) \
+        :
             if code.startswith(keysym):
                 if self.enabled[img]:
                     if keysym == 'KEY_ISO_LEVEL3_SHIFT':
@@ -731,8 +835,10 @@ class KeyMon:
             letter = medium_name
             if code not in self.name_fnames:
                 template = 'one-char-numpad-template'
-                self.name_fnames[code] = [
-                    fix_svg_key_closure(self.svg_name(template), [('&amp;', letter)])]
+                self.name_fnames[code] = \
+                    [
+                        fix_svg_key_closure(self.svg_name(template), [('&amp;', letter)]),
+                    ]
             #end if
             self._handle_event(self.key_image, code, value)
             return
@@ -747,8 +853,10 @@ class KeyMon:
                 else:
                     template = 'multi-char-template'
                 #end if
-                self.name_fnames[code] = [
-                    fix_svg_key_closure(self.svg_name(template), [('&amp;', letter)])]
+                self.name_fnames[code] = \
+                    [
+                        fix_svg_key_closure(self.svg_name(template), [('&amp;', letter)]),
+                    ]
             else:
                 logging.debug('code in %s', code)
             #end if
@@ -771,9 +879,15 @@ class KeyMon:
                         n_image = i
                     #end if
                 #end for
-                if self.options.emulate_middle and ((self.images['MOUSE'].current == 'BTN_LEFT'
-                    and code == 'BTN_RIGHT') or
-                    (self.images['MOUSE'].current == 'BTN_RIGHT' and code == 'BTN_LEFT')):
+                if (
+                        self.options.emulate_middle
+                    and
+                        (
+                            self.images['MOUSE'].current == 'BTN_LEFT' and code == 'BTN_RIGHT'
+                        or
+                            self.images['MOUSE'].current == 'BTN_RIGHT' and code == 'BTN_LEFT'
+                        )
+                ) :
                     code = 'BTN_MIDDLE'
                 elif value == 0 and n_code != n_image:
                     code = self.btns[n_image - n_code]
@@ -782,9 +896,10 @@ class KeyMon:
                 #end if
             elif code not in self.name_fnames:
                 btn_num = code.replace('BTN_', '')
-                self.name_fnames[code] = [
-                    fix_svg_key_closure(self.svg_name('mouse'),
-                        [('>&#8203;', '>' + btn_num)])]
+                self.name_fnames[code] = \
+                    [
+                        fix_svg_key_closure(self.svg_name('mouse'), [('>&#8203;', '>' + btn_num)]),
+                    ]
             #end if
             self._handle_event(self.images['MOUSE'], code, value)
         #end if
@@ -846,8 +961,7 @@ class KeyMon:
 
         toggle_chrome = Gtk.CheckMenuItem(label = _('Window _Chrome'))
         toggle_chrome.set_active(self.window.get_decorated())
-        toggle_chrome.connect_data('activate', self.toggle_chrome,
-           self.window.get_decorated())
+        toggle_chrome.connect_data('activate', self.toggle_chrome, self.window.get_decorated())
         toggle_chrome.show()
         menu.append(toggle_chrome)
 
@@ -921,8 +1035,11 @@ class KeyMon:
         self.update_shape_mask(force=True)
 
         # reload keymap
-        self.modmap = mod_mapper.safely_read_mod_map(
-                self.options.kbd_file, self.options.kbd_files)
+        self.modmap = mod_mapper.safely_read_mod_map \
+          (
+            fname = self.options.kbd_file,
+            kbd_files = self.options.kbd_files
+          )
     #end settings_changed
 
     def _toggle_a_key(self, image, name, show):
@@ -944,10 +1061,11 @@ class KeyMon:
         dlg = Gtk.AboutDialog()
         # Find the logo file
         logo_paths = (os.path.join(self.pathname, '../../icons'),)
-        logo_paths += tuple(logo_path + '/share/pixmaps' for logo_path in (
-                os.path.expanduser('~'),
-                '/usr', '/usr/local', '/opt/local',
-                ))
+        logo_paths += tuple \
+          (
+            logo_path + '/share/pixmaps'
+            for logo_path in (os.path.expanduser('~'), '/usr', '/usr/local', '/opt/local',)
+          )
         logo_paths = [logo_path + '/key-mon.xpm' for logo_path in logo_paths]
         for logo_path in logo_paths:
             if os.path.exists(logo_path):
@@ -960,23 +1078,29 @@ class KeyMon:
         dlg.set_program_name('key-mon')
         dlg.set_website('http://code.google.com/p/key-mon/')
         dlg.set_version(__version__)
-        dlg.set_authors([
-            __author__,
-            'Yu-Jie Lin',
-            'Danial G. Taylor',
-            'Jakub Steiner',
-            ])
-        dlg.set_license('''Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.''')
+        dlg.set_authors \
+          (
+            [
+                __author__,
+                'Yu-Jie Lin',
+                'Danial G. Taylor',
+                'Jakub Steiner',
+            ]
+          )
+        dlg.set_license \
+          (
+            'Licensed under the Apache License, Version 2.0 (the "License");\n'
+            'you may not use this file except in compliance with the License.\n'
+            'You may obtain a copy of the License at\n'
+            '\n'
+            '     http://www.apache.org/licenses/LICENSE-2.0\n'
+            '\n'
+            'Unless required by applicable law or agreed to in writing, software\n'
+            'distributed under the License is distributed on an "AS IS" BASIS,\n'
+            'WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n'
+            'See the License for the specific language governing permissions and\n'
+            'limitations under the License.'
+          )
         dlg.run()
         dlg.destroy()
     #end show_about_dlg
@@ -992,124 +1116,330 @@ def show_version():
 def create_options():
     opts = options.Options()
 
-    opts.add_option(opt_short='-s', opt_long='--smaller', dest='smaller', default=False,
-                    type='bool',
-                    help=_('Make the dialog 25% smaller than normal.'))
-    opts.add_option(opt_short='-l', opt_long='--larger', dest='larger', default=False,
-                    type='bool',
-                    help=_('Make the dialog 25% larger than normal.'))
-    opts.add_option(opt_short='-m', opt_long='--meta', dest='meta', type='bool',
-                    ini_group='buttons', ini_name='meta', default=None,
-                    help=_('Show the meta (windows) key.'))
-    opts.add_option(opt_long='--mouse', dest='mouse', type='bool', default=True,
-                    ini_group='buttons', ini_name='mouse',
-                    help=_('Show the mouse.'))
-    opts.add_option(opt_long='--shift', dest='shift', type='bool', default=True,
-                    ini_group='buttons', ini_name='shift',
-                    help=_('Show shift key.'))
-    opts.add_option(opt_long='--ctrl', dest='ctrl', type='bool', default=True,
-                    ini_group='buttons', ini_name='ctrl',
-                    help=_('Show the ctrl key.'))
-    opts.add_option(opt_long='--alt', dest='alt', type='bool', default=True,
-                    ini_group='buttons', ini_name='alt',
-                    help=_('Show the alt key.'))
-    opts.add_option(opt_long='--scale', dest='scale', type='float', default=1.0,
-                    ini_group='ui', ini_name='scale',
-                    help=_('Scale the dialog. ex. 2.0 is 2 times larger, 0.5 is '
-                           'half the size. Defaults to %default'))
-    opts.add_option(opt_long='--key-timeout', dest='key_timeout',
-                    type='float', default=0.5,
-                    ini_group='ui', ini_name='key_timeout',
-                    help=_('Timeout before key returns to unpressed image. '
-                           'Defaults to %default'))
-    opts.add_option(opt_long='--mouse-timeout', dest='mouse_timeout',
-                    type='float', default=0.2,
-                    ini_group='ui', ini_name='mouse_timeout',
-                    help=_('Timeout before mouse returns to unpressed image. '
-                           'Defaults to %default'))
-    opts.add_option(opt_long='--visible-click-timeout', dest='visible_click_timeout',
-                    type='float', default=0.2,
-                    ini_group='ui', ini_name='visible_click_timeout',
-                    help=_('Timeout before highly visible click disappears. '
-                           'Defaults to %default'))
-    opts.add_option(opt_long='--decorated', dest='decorated', type='bool',
-                    ini_group='ui', ini_name='decorated',
-                    default=False,
-                    help=_('Show decoration'))
-    opts.add_option(opt_long='--backgroundless', dest='backgroundless', type='bool',
-                    ini_group='ui', ini_name='backgroundless',
-                    default=False,
-                    help=_('Show only buttons'))
-    opts.add_option(opt_long='--no-press-fadeout', dest='no_press_fadeout',
-                    type='float', default=0.0,
-                    ini_group='ui', ini_name='no_press_fadeout',
-                    help=_('Fadeout the window after a period with no key press. '
-                           'Defaults to %default seconds (Experimental)'))
-    opts.add_option(opt_long='--only_combo', dest='only_combo', type='bool',
-                    ini_group='ui', ini_name='only_combo',
-                    default=False,
-                    help=_('Show only key combos (ex. Control-A)'))
-    opts.add_option(opt_long='--sticky', dest='sticky_mode', type='bool',
-                    ini_group='ui', ini_name='sticky_mode',
-                    default=False,
-                    help=_('Sticky mode'))
-    opts.add_option(opt_long='--visible_click', dest='visible_click', type='bool',
-                    ini_group='ui', ini_name='visible-click',
-                    default=False,
-                    help=_('Show where you clicked'))
-    opts.add_option(opt_long='--follow_mouse', dest='follow_mouse', type='bool',
-                    ini_group='ui', ini_name='follow-mouse',
-                    default=False,
-                    help=_('Show the mouse more visibly'))
-    opts.add_option(opt_long='--kbdfile', dest='kbd_file',
-                    ini_group='devices', ini_name='map',
-                    default=None,
-                    help=_('Use this kbd filename.'))
-    opts.add_option(opt_long='--swap', dest='swap_buttons', type='bool',
-                    default=False,
-                    ini_group='devices', ini_name='swap_buttons',
-                    help=_('Swap the mouse buttons.'))
-    opts.add_option(opt_long='--emulate-middle', dest='emulate_middle', type='bool',
-                    default=False,
-                    ini_group='devices', ini_name='emulate_middle',
-                    help=_('When you press the left, and right mouse buttons at the same time, '
-                           'it displays as a middle mouse button click. '))
-    opts.add_option(opt_short='-v', opt_long='--version', dest='version', type='bool',
-                    help=_('Show version information and exit.'))
-    opts.add_option(opt_short='-t', opt_long='--theme', dest='theme', type='str',
-                    ini_group='ui', ini_name='theme', default='classic',
-                    help=_('The theme to use when drawing status images (ex. "-t apple").'))
-    opts.add_option(opt_long='--list-themes', dest='list_themes', type='bool',
-                    help=_('List available themes'))
-    opts.add_option(opt_long='--old-keys', dest='old_keys', type='int',
-                    ini_group='buttons', ini_name='old-keys',
-                    help=_('How many historical keypresses to show (defaults to %default)'),
-                    default=0)
-    opts.add_option(opt_long='--reset', dest='reset', type='bool',
-                    help=_('Reset all options to their defaults.'),
-                    default=None)
-
-    opts.add_option(opt_short=None, opt_long='--opacity', type='float',
-                    dest='opacity', default=1.0, help='Opacity of window',
-                    ini_group='ui', ini_name='opacity')
-    opts.add_option(opt_short=None, opt_long=None, type='int',
-                    dest='x_pos', default=-1, help='Last X Position',
-                    ini_group='position', ini_name='x')
-    opts.add_option(opt_short=None, opt_long=None, type='int',
-                    dest='y_pos', default=-1, help='Last Y Position',
-                    ini_group='position', ini_name='y')
+    opts.add_option \
+      (
+        opt_short='-s',
+        opt_long='--smaller',
+        dest='smaller',
+        default=False,
+        type='bool',
+        help=_('Make the dialog 25% smaller than normal.')
+      )
+    opts.add_option \
+      (
+        opt_short='-l',
+        opt_long='--larger',
+        dest='larger',
+        default=False,
+        type='bool',
+        help=_('Make the dialog 25% larger than normal.')
+      )
+    opts.add_option \
+      (
+        opt_short='-m',
+        opt_long='--meta',
+        dest='meta',
+        type='bool',
+        ini_group='buttons', ini_name='meta', default=None,
+        help=_('Show the meta (windows) key.')
+      )
+    opts.add_option \
+      (
+        opt_long='--mouse',
+        dest='mouse',
+        type='bool',
+        default=True,
+        ini_group='buttons', ini_name='mouse',
+        help=_('Show the mouse.')
+      )
+    opts.add_option \
+      (
+        opt_long='--shift',
+        dest='shift',
+        type='bool',
+        default=True,
+        ini_group='buttons', ini_name='shift',
+        help=_('Show shift key.')
+      )
+    opts.add_option \
+      (
+        opt_long='--ctrl',
+        dest='ctrl',
+        type='bool',
+        default=True,
+        ini_group='buttons',
+        ini_name='ctrl',
+        help=_('Show the ctrl key.')
+      )
+    opts.add_option \
+      (
+        opt_long='--alt',
+        dest='alt',
+        type='bool',
+        default=True,
+        ini_group='buttons',
+        ini_name='alt',
+        help=_('Show the alt key.')
+      )
+    opts.add_option \
+      (
+        opt_long='--scale',
+        dest='scale',
+        type='float',
+        default=1.0,
+        ini_group='ui',
+        ini_name='scale',
+        help=
+          _(
+           'Scale the dialog. ex. 2.0 is 2 times larger, 0.5 is '
+           'half the size. Defaults to %default'
+        )
+      )
+    opts.add_option \
+      (
+        opt_long='--key-timeout',
+        dest='key_timeout',
+        type='float',
+        default=0.5,
+        ini_group='ui',
+        ini_name='key_timeout',
+        help=_('Timeout before key returns to unpressed image. Defaults to %default')
+      )
+    opts.add_option \
+      (
+        opt_long='--mouse-timeout',
+        dest='mouse_timeout',
+        type='float',
+        default=0.2,
+        ini_group='ui',
+        ini_name='mouse_timeout',
+        help=_('Timeout before mouse returns to unpressed image. Defaults to %default')
+      )
+    opts.add_option \
+      (
+        opt_long='--visible-click-timeout',
+        dest='visible_click_timeout',
+        type='float',
+        default=0.2,
+        ini_group='ui',
+        ini_name='visible_click_timeout',
+        help=_('Timeout before highly visible click disappears. Defaults to %default')
+      )
+    opts.add_option \
+      (
+        opt_long='--decorated',
+        dest='decorated',
+        type='bool',
+        ini_group='ui',
+        ini_name='decorated',
+        default=False,
+        help=_('Show decoration')
+      )
+    opts.add_option \
+      (
+        opt_long='--backgroundless',
+        dest='backgroundless',
+        type='bool',
+        ini_group='ui',
+        ini_name='backgroundless',
+        default=False,
+        help=_('Show only buttons')
+      )
+    opts.add_option \
+      (
+        opt_long='--no-press-fadeout',
+        dest='no_press_fadeout',
+        type='float',
+        default=0.0,
+        ini_group='ui',
+        ini_name='no_press_fadeout',
+        help=
+          _(
+             'Fadeout the window after a period with no key press. '
+             'Defaults to %default seconds (Experimental)'
+          )
+      )
+    opts.add_option \
+      (
+        opt_long='--only_combo',
+        dest='only_combo',
+        type='bool',
+        ini_group='ui',
+        ini_name='only_combo',
+        default=False,
+        help=_('Show only key combos (ex. Control-A)')
+      )
+    opts.add_option \
+      (
+        opt_long='--sticky',
+        dest='sticky_mode',
+        type='bool',
+        ini_group='ui',
+        ini_name='sticky_mode',
+        default=False,
+        help=_('Sticky mode')
+      )
+    opts.add_option \
+      (
+        opt_long='--visible_click',
+        dest='visible_click',
+        type='bool',
+        ini_group='ui',
+        ini_name='visible-click',
+        default=False,
+        help=_('Show where you clicked')
+      )
+    opts.add_option \
+      (
+        opt_long='--follow_mouse',
+        dest='follow_mouse',
+        type='bool',
+        ini_group='ui',
+        ini_name='follow-mouse',
+        default=False,
+        help=_('Show the mouse more visibly')
+      )
+    opts.add_option \
+      (
+        opt_long='--kbdfile',
+        dest='kbd_file',
+        ini_group='devices',
+        ini_name='map',
+        default=None,
+        help=_('Use this kbd filename.')
+      )
+    opts.add_option \
+      (
+        opt_long='--swap',
+        dest='swap_buttons',
+        type='bool',
+        default=False,
+        ini_group='devices',
+        ini_name='swap_buttons',
+        help=_('Swap the mouse buttons.')
+      )
+    opts.add_option \
+      (
+        opt_long='--emulate-middle',
+        dest='emulate_middle',
+        type='bool',
+        default=False,
+        ini_group='devices',
+        ini_name='emulate_middle',
+        help=
+          _(
+            'When you press the left, and right mouse buttons at the same time, '
+            'it displays as a middle mouse button click. '
+           )
+      )
+    opts.add_option \
+      (
+        opt_short='-v',
+        opt_long='--version',
+        dest='version',
+        type='bool',
+        help=_('Show version information and exit.')
+      )
+    opts.add_option \
+      (
+        opt_short='-t',
+        opt_long='--theme',
+        dest='theme',
+        type='str',
+        ini_group='ui',
+        ini_name='theme',
+        default='classic',
+        help=_('The theme to use when drawing status images (ex. "-t apple").')
+      )
+    opts.add_option \
+      (
+        opt_long='--list-themes',
+        dest='list_themes',
+        type='bool',
+        help=_('List available themes')
+      )
+    opts.add_option \
+      (
+        opt_long='--old-keys',
+        dest='old_keys',
+        type='int',
+        ini_group='buttons',
+        ini_name='old-keys',
+        help=_('How many historical keypresses to show (defaults to %default)'),
+        default=0
+      )
+    opts.add_option \
+      (
+        opt_long='--reset',
+        dest='reset',
+        type='bool',
+        help=_('Reset all options to their defaults.'),
+        default=None
+      )
+    opts.add_option \
+      (
+        opt_short=None,
+        opt_long='--opacity',
+        type='float',
+        dest='opacity',
+        default=1.0,
+        help='Opacity of window',
+        ini_group='ui',
+        ini_name='opacity'
+      )
+    opts.add_option \
+      (
+        opt_short=None,
+        opt_long=None,
+        type='int',
+        dest='x_pos',
+        default=-1,
+        help='Last X Position',
+        ini_group='position',
+        ini_name='x'
+      )
+    opts.add_option \
+      (
+        opt_short=None,
+        opt_long=None,
+        type='int',
+        dest='y_pos',
+        default=-1,
+        help='Last Y Position',
+        ini_group='position',
+        ini_name='y'
+      )
 
     opts.add_option_group(_('Developer Options'), _('These options are for developers.'))
-    opts.add_option(opt_long='--loglevel', dest='loglevel', type='str', default='',
-                    help=_('Logging level'))
-    opts.add_option(opt_short='-d', opt_long='--debug', dest='debug', type='bool',
-                    default=False,
-                    help=_('Output debugging information. '
-                           'Shorthand for --loglevel=debug'))
-    opts.add_option(opt_long='--screenshot', dest='screenshot', type='str', default='',
-                    help=_('Create a "screenshot.png" and exit. '
-                           'Pass a comma separated list of keys to simulate'
-                           '(ex. "KEY_A,KEY_LEFTCTRL").'))
+    opts.add_option \
+      (
+        opt_long='--loglevel',
+        dest='loglevel',
+        type='str',
+        default='',
+        help=_('Logging level')
+      )
+    opts.add_option \
+      (
+        opt_short='-d',
+        opt_long='--debug',
+        dest='debug',
+        type='bool',
+        default=False,
+        help=_('Output debugging information. Shorthand for --loglevel=debug')
+      )
+    opts.add_option \
+      (
+        opt_long='--screenshot',
+        dest='screenshot',
+        type='str',
+        default='',
+        help=
+          _(
+            'Create a "screenshot.png" and exit. Pass a comma separated'
+            ' list of keys to simulate (ex. "KEY_A,KEY_LEFTCTRL").'
+          )
+      )
     return opts
 #end create_options
 
@@ -1136,9 +1466,11 @@ def main():
             loglevel = logging.DEBUG
         #end if
     #end for
-    logging.basicConfig(
+    logging.basicConfig \
+      (
         level=loglevel,
-        format='%(filename)s [%(lineno)d]: %(levelname)s %(message)s')
+        format='%(filename)s [%(lineno)d]: %(levelname)s %(message)s'
+      )
     if loglevel is None:
         # Disabling warning, info, debug messages
         logging.disable(logging.WARNING)
@@ -1172,8 +1504,12 @@ def main():
     elif opts.theme and opts.theme not in opts.themes:
         print(_('Theme %r does not exist') % opts.theme)
         print()
-        print(_('Please make sure %r can be found in '
-                'one of the following directories:') % opts.theme)
+        print \
+          (
+                _('Please make sure %r can be found inone of the following directories:')
+            %
+                opts.theme
+          )
         print()
         for theme_dir in settings.get_config_dirs('themes'):
             print(' - %s' % theme_dir)

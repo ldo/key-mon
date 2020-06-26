@@ -44,8 +44,7 @@ class ShapedWindow(Gtk.Window):
         self.name_fnames = {
           'mouse' : [fname],
         }
-        self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames,
-                                                             self.scale)
+        self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames, self.scale)
         self.pixbuf = self.pixbufs.get('mouse')
         self.resize(self.pixbuf.get_width(), self.pixbuf.get_height())
 

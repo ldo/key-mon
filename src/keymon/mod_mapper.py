@@ -307,10 +307,12 @@ def parse_modmap(lines):
 def read_kdb(fname):
     """Read the kdb file."""
     logging.debug('Loading kbd file: %s' % fname)
-    return parse_kdb(
-            codecs.open(
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), fname),
-                'r', 'utf-8').read())
+    return \
+        parse_kdb \
+          (
+            codecs.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), fname), 'r', 'utf-8')
+                .read()
+          )
 #end read_kdb
 
 def parse_kdb(text):

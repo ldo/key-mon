@@ -73,8 +73,12 @@ class TwoStateImage(Gtk.Image):
       self._really_pressed = value
   #end set_really_pressed
   # Lint doesn't like @property.setter because of duplicate method names.
-  really_pressed = property(get_really_pressed, set_really_pressed, None,
-      "Physically pressed button")
+  really_pressed = property \
+    (
+      fget = get_really_pressed,
+      fset = set_really_pressed,
+      doc = "Physically pressed button"
+    )
 
   def reset_time_if_pressed(self):
       """Start the countdown now."""
