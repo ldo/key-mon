@@ -1,9 +1,11 @@
-recursive-include docs *.rst
-recursive-include src *.py *.svg *.kbd *.mo config
 include COPYING*
 include INSTALL*
 include README*
 include CHANGELOG*
+include src/keymon/*.py
+exclude src/keymon/options_test.py
 include src/key-mon
-include man/*.1
+recursive-include src *.svg *.kbd *.mo config
 recursive-include icons *.desktop *.xpm *.png *.svg
+recursive-include docs *.rst
+include man/*.1
