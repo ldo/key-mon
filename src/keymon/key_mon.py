@@ -466,10 +466,12 @@ class KeyMon:
             return
         #end if
 
-        _, _, width, height = self.window.get_allocation()
+        alloc = self.window.get_allocation()
+        width = alloc.width
+        height = alloc.height
         masks = \
             [
-                self.pixbufs.get(btn.current).render_pixmap_and_mask()[1]
+                Gdk.cairo_surface_create_from_pixbuf(self.pixbufs.get(btn.current), 1, None)
                 for btn in btns
             ]
         shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
@@ -478,15 +480,17 @@ class KeyMon:
         gc = cairo.Context(shape_mask)
         # Initialize the mask just in case masks of buttons can't fill the window,
         # if that happens, some artifacts will be seen usually at right edge.
-        gc.set_source_rgb \
+        gc.set_source_rgba \
           (
-            Gdk.Color(pixel=0) if self.options.backgroundless else
-            Gdk.Color(pixel=1)
+            *(4 * ((1, 0)[self.options.backgroundless],))
           )
         gc.new_path()
         gc.rectangle(0, 0, width, height)
         gc.fill()
 
+        gdk_window = self.window.get_property("window")
+        if gdk_window == None :
+            return
         for btn_allocation, mask in zip(cache_id, masks):
             # Don't create mask until every image is allocated
             if btn_allocation[0] == -1:
@@ -499,7 +503,8 @@ class KeyMon:
 
         gc = None
         shape_mask.flush()
-        self.window.get_property("window").shape_combine_region(shape_mask, 0, 0)
+        shape_mask = Gdk.cairo_region_create_from_surface(shape_mask)
+        gdk_window.shape_combine_region(shape_mask, 0, 0)
         self.shape_mask_current = cache_id
         self.shape_mask_cache[cache_id] = shape_mask
     #end update_shape_mask

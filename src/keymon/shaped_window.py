@@ -41,15 +41,20 @@ class ShapedWindow(Gtk.Window):
         self.shown = False
         self.timeout = timeout
         self.timeout_timer = None
-        self.name_fnames = {
-          'mouse' : [fname],
-        }
+        self.name_fnames = \
+            {
+                'mouse' : [fname],
+            }
         self.pixbufs = lazy_pixbuf_creator.LazyPixbufCreator(self.name_fnames, self.scale)
         self.pixbuf = self.pixbufs.get('mouse')
         self.resize(self.pixbuf.get_width(), self.pixbuf.get_height())
 
         # a pixmap widget to contain the pixmap
         self.image = Gtk.Image()
+        self.mask = Gdk.cairo_region_create_from_surface \
+          (
+            Gdk.cairo_surface_create_from_pixbuf(self.pixbuf, 1, None)
+          )
         self.image.set_from_pixbuf(self.pixbuf)
         self.image.show()
         self.add(self.image)
@@ -58,9 +63,7 @@ class ShapedWindow(Gtk.Window):
     def _on_size_allocate(self, win, unused_allocation):
         """Called when first allocated."""
         # Set the window shape
-        #win.get_property("window").shape_combine_region(self.mask, 0, 0)
-          # FIXME: GTK 3 wants a Cairo region, but Cairo offers no function
-          # to generate a region from a bitmap.
+        win.get_property("window").shape_combine_region(self.mask, 0, 0)
         win.set_property('skip-taskbar-hint', True)
         if not win.is_composited():
             print('Unable to fade the window')
@@ -111,9 +114,8 @@ class ShapedWindow(Gtk.Window):
 
     def fade_away(self):
         """Make the window fade in a little bit."""
-        # TODO this isn't doing any fading out
         self.shown = False
-        self.timeout_timer = GObject.timeout_add(int(self.timeout * 1000), self.delayed_hide)
+        self.timeout_timer = GObject.timeout_add(round(self.timeout * 1000), self.delayed_hide)
     #end fade_away
 
 #end ShapedWindow
