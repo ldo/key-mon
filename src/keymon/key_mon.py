@@ -148,6 +148,7 @@ class KeyMon:
             resize = self.options.scale
           )
         self.create_window()
+        self.fade_lock = 0
         self.reset_no_press_timer()
     #end __init__
 
@@ -713,20 +714,19 @@ class KeyMon:
 
     def reset_no_press_timer(self):
         """Initialize no_press_timer"""
-        if not self.options.no_press_fadeout:
-            return
-        logging.debug('Resetting no_press_timer')
         if not self.window.get_property('visible'):
             self.window.move(self.options.x_pos, self.options.y_pos)
             self.window.show()
         #end if
         self.set_window_opacity(self.options.opacity)
         self.clear_no_press_timer()
-        self.no_press_timer = GLib.timeout_add \
-          (
-            int(self.options.no_press_fadeout * 1000),
-            self.no_press_fadeout
-          )
+        if self.fade_lock == 0 and self.options.no_press_fadeout != 0 :
+            self.no_press_timer = GLib.timeout_add \
+              (
+                int(self.options.no_press_fadeout * 1000),
+                self.no_press_fadeout
+              )
+        #end if
     #end reset_no_press_timer
 
     def no_press_fadeout(self, begin=True):
@@ -734,10 +734,7 @@ class KeyMon:
         Args:
           begin: indicate if this timeout is requested by handle_event.
         """
-        opacity = self.last_window_opacity - self.options.opacity / 10.0
-        if opacity < 0.0:
-            opacity = 0.0
-        #end if
+        opacity = max(self.last_window_opacity - self.options.opacity / 10.0, 0)
         logging.debug('Set opacity = %f' % opacity)
         self.set_window_opacity(opacity)
         if opacity == 0.0:
@@ -956,10 +953,22 @@ class KeyMon:
 
     def right_click_handler(self, unused_widget, event):
         """Handle the right click button and show a menu."""
+
+        save_fadeout = None
+
+        def menu_done(*_) :
+            self.fade_lock -= 1
+            self.reset_no_press_timer()
+        #end menu_done
+
+    #begin right_click_handler
         if event.button != 3:
             return
+        self.fade_lock += 1
         menu = self.create_context_menu()
         menu.show()
+        #menu.connect("cancel", menu_done) # no need
+        menu.connect("selection-done", menu_done)
         menu.popup(None, None, None, None, event.button, event.time)
     #end right_click_handler
 
@@ -1003,11 +1012,13 @@ class KeyMon:
 
     def show_settings_dlg(self, *unused_args):
         """Show the settings dialog."""
+        self.fade_lock += 1
         dlg = settings.SettingsDialog(self.window, self.options)
         dlg.connect('settings-changed', self.settings_changed)
         dlg.show_all()
         dlg.run()
         dlg.destroy()
+        self.fade_lock -= 1
     #end show_settings_dlg
 
     def settings_changed(self, unused_dlg):
@@ -1113,8 +1124,10 @@ class KeyMon:
             'See the License for the specific language governing permissions and\n'
             'limitations under the License.'
           )
+        self.fade_lock += 1
         dlg.run()
         dlg.destroy()
+        self.fade_lock -= 1
     #end show_about_dlg
 
 #end KeyMon
