@@ -32,12 +32,14 @@ __author__ = 'scott@forusers.com (Scott Kirkwood))'
 import logging
 import os
 import sys
-import re
-import tempfile
+import cairo
 import gi
 gi.require_version("Gdk", "3.0")
+gi.require_version("Rsvg", "2.0")
 from gi.repository import \
-    GdkPixbuf
+    Gdk, \
+    GdkPixbuf, \
+    Rsvg
 
 class LazyPixbufCreator:
     """Class to create SVG images on the fly."""
@@ -83,12 +85,24 @@ class LazyPixbufCreator:
         img = None
         for operation in ops:
             if isinstance(operation, str):
-                img = self._composite(img, self._read_from_file(operation))
+                fig = Rsvg.Handle.new_from_file(operation)
             else:
-                image_bytes = operation()
-                image_bytes = self._resize(image_bytes)
-                img = self._composite(img, self._read_from_bytes(image_bytes))
+                fig = Rsvg.Handle.new_from_data(operation())
             #end if
+            dims = fig.get_dimensions()
+            width = round(dims.width * self.resize)
+            height = round(dims.height * self.resize)
+            pix = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
+            gc = cairo.Context(pix)
+            gc.identity_matrix()
+            gc.scale(self.resize, self.resize)
+            gc.set_source_rgba(0, 0, 0, 0)
+            gc.paint()
+            fig.render_cairo(gc)
+            pix.flush()
+            gc = None
+            img2 = Gdk.pixbuf_get_from_surface(pix, 0, 0, width, height)
+            img = self._composite(img, img2)
         #end for
         self.pixbufs[name] = img
         return name
@@ -121,65 +135,5 @@ class LazyPixbufCreator:
         #end if
         return img2
     #end _composite
-
-    def _read_from_file(self, fname):
-        """Read in the file in from fname."""
-        logging.debug('Read file %s', fname)
-        if self.resize == 1.0:
-            return GdkPixbuf.Pixbuf.new_from_file(fname)
-        fin = open(fname, "rb")
-        image_bytes = self._resize(fin.read())
-        fin.close()
-        return self._read_from_bytes(image_bytes)
-    #end _read_from_file
-
-    def _read_from_bytes(self, image_bytes):
-        """Writes the bytes to a file and then reads the file."""
-        # TODO: use direct new_from_bytes call instead
-        fout, fname = tempfile.mkstemp(prefix='keymon-', suffix='.svg')
-        os.write(fout, image_bytes)
-        os.close(fout)
-        try:
-            img = GdkPixbuf.Pixbuf.new_from_file(fname)
-        except:
-            logging.error('Unable to read %r: %s', fname, image_bytes)
-            sys.exit(-1)
-        #end try
-        try:
-            os.unlink(fname)
-        except OSError:
-            pass
-        #end try
-        return img
-    #end _read_from_bytes
-
-    def _resize(self, image_bytes):
-        """Resize the image by manipulating the svg."""
-        if self.resize == 1.0:
-            return image_bytes
-        template = br'(<svg[^<]+)(%s=")(\d+\.?\d*)'
-        image_bytes = self._resize_text(image_bytes, template % b'width')
-        image_bytes = self._resize_text(image_bytes, template % b'height')
-        image_bytes = image_bytes.replace \
-          (
-            b'<g',
-            b'<g transform="scale(%f, %f)"' % (self.resize, self.resize),
-            1
-          )
-        return image_bytes
-    #end _resize
-
-    def _resize_text(self, image_bytes, regular_exp):
-        """Change the numeric value of some sizing text by regular expression."""
-        re_x = re.compile(regular_exp)
-        grps = re_x.search(image_bytes)
-        if grps:
-            num = float(grps.group(3))
-            num = num * self.resize
-            replace = grps.group(1) + grps.group(2) + str(num).encode()
-            image_bytes = re_x.sub(replace, image_bytes, 1)
-        #end if
-        return image_bytes
-    #end _resize_text
 
 #end LazyPixbufCreator
