@@ -217,7 +217,7 @@ class KeyMon:
                   'SCROLL_UP': [self.svg_name('mouse'), self.svg_name('scroll-up-mouse')],
                   'SCROLL_DOWN': [self.svg_name('mouse'), self.svg_name('scroll-dn-mouse')],
 
-                  'REL_LEFT': [self.svg_name('mouse'), self.svg_name('sroll-lft-mouse')],
+                  'REL_LEFT': [self.svg_name('mouse'), self.svg_name('scroll-lft-mouse')],
                   'REL_RIGHT': [self.svg_name('mouse'), self.svg_name('scroll-rgt-mouse')],
                   'SHIFT': [self.svg_name('shift')],
                   'SHIFT_EMPTY': [self.svg_name('shift'), self.svg_name('whiteout-72')],
