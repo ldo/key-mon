@@ -991,10 +991,14 @@ class KeyMon:
         return menu
     #end create_context_menu
 
+    def update_chrome(self) :
+        self.window.set_decorated(self.options.decorated)
+    #end update_chrome
+
     def toggle_chrome(self, unused_widget, current):
         """Toggle whether the window has chrome or not."""
-        self.window.set_decorated(not current)
         self.options.decorated = not self.options.decorated
+        self.update_chrome()
     #end toggle_chrome
 
     def show_settings_dlg(self, *unused_args):
@@ -1015,7 +1019,7 @@ class KeyMon:
         self.layout_boxes()
         self.mouse_indicator_win.hide()
         self.mouse_indicator_win.timeout = self.options.visible_click_timeout
-        self.window.set_decorated(self.options.decorated)
+        self.update_chrome()
         self.name_fnames = self.create_names_to_fnames()
         self.pixbufs.reset_all(self.name_fnames, self.options.scale)
         for but in self.buttons:
