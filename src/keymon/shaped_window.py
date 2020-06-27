@@ -63,12 +63,15 @@ class ShapedWindow(Gtk.Window):
     def _on_size_allocate(self, win, unused_allocation):
         """Called when first allocated."""
         # Set the window shape
-        win.get_property("window").shape_combine_region(self.mask, 0, 0)
-        win.set_property('skip-taskbar-hint', True)
-        if not win.is_composited():
-            print('Unable to fade the window')
-        else:
-            win.set_opacity(0.5)
+        gdk_window = win.get_property("window")
+        if gdk_window != None :
+            gdk_window.shape_combine_region(self.mask, 0, 0)
+            win.set_property('skip-taskbar-hint', True)
+            if not win.is_composited():
+                print('Unable to fade the window')
+            else:
+                win.set_opacity(0.5)
+            #end if
         #end if
     #end _on_size_allocate
 
