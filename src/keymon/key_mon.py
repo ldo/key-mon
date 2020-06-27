@@ -174,9 +174,12 @@ class KeyMon:
                     event = xlib.XEvent('EV_KEY', scancode=scancode, code=key, value=1)
                 elif key.startswith('BTN_'):
                     event = xlib.XEvent('EV_KEY', scancode=0, code=key, value=1)
+                else :
+                    event = None
                 #end if
-
-                self.handle_event(event)
+                if event != None :
+                    self.handle_event(event)
+                #end if
                 while GLib.main_context_default().pending():
                     GLib.main_context_default().iteration(False)
                 #end while
@@ -192,13 +195,9 @@ class KeyMon:
         win = self.window
         x, y = win.get_position()
         w, h = win.get_size()
-        screenshot = Gdk.pixbuf_get_from_window \
-          (
-            Gdk.get_default_root_window(),
-            x, y, w, h
-          )
+        screenshot = Gdk.pixbuf_get_from_window(win.get_property("window"), 0, 0, w, h)
         fname = 'screenshot.png'
-        screenshot.save(fname, 'png')
+        screenshot.savev(fname, 'png', '', '')
         print('Saved screenshot %r' % fname)
         self.destroy(None)
     #end do_screenshot
