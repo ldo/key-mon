@@ -22,7 +22,7 @@ Requirements
 This program requires other libraries which you may or may not have installed.
 
 * python3-xlib - Interface for Python to the X11 Protocol
-                (http://python-xlib.sourceforge.net/)
+                (https://github.com/python-xlib/python-xlib)
 * python3-gi - Python bindings for GObject/GLib/GTK+
                 (http://lazka.github.io/pgi-docs/)
 
