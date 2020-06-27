@@ -495,7 +495,7 @@ class KeyMon:
             # Don't create mask until every image is allocated
             if btn_allocation[0] == -1:
                 return
-            gc.set_source_surface(mask, 0, 0)
+            gc.set_source_surface(mask, btn_allocation[0], btn_allocation[1])
             gc.new_path()
             gc.rectangle(*btn_allocation)
             gc.fill()
