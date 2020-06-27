@@ -22,7 +22,7 @@ This creates a GTK pixbuf in one of 2 manners:
    pixbuf_new_from_file().
 
 The name_fnames contains a list for key.  Each element of the list will be
-composted with the previous element (overlayed on top of).
+composited with the previous element (overlayed on top of).
 
 Alpha transparencies from the new, overlayed, image are respected.
 """

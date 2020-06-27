@@ -53,7 +53,7 @@ def fix_svg_key_closure(fname, from_tos):
     Args:
       from_tos: list of from, to pairs for search replace.
     Returns:
-      A bound function which returns the file fname with modifications.
+      A bound function which returns the contents of file fname with modifications.
     """
 
     from_tos = tuple((a.encode(), b.encode()) for a, b in from_tos)
@@ -61,9 +61,7 @@ def fix_svg_key_closure(fname, from_tos):
     def fix_svg_key():
         """Given an SVG file return the SVG text fixed."""
         logging.debug('Read file %r', fname)
-        fin = open(fname, "rb")
-        fbytes = fin.read()
-        fin.close()
+        fbytes = open(fname, "rb").read()
         for fin, t in from_tos:
             # Quick XML escape fix
             t = t.replace(b'<', b'&lt;')
@@ -72,6 +70,7 @@ def fix_svg_key_closure(fname, from_tos):
         return fbytes
     #end fix_svg_key
 
+#begin fix_svg_key_closure
     return fix_svg_key
 #end fix_svg_key_closure
 
@@ -1107,6 +1106,7 @@ class KeyMon:
                 'Yu-Jie Lin',
                 'Danial G. Taylor',
                 'Jakub Steiner',
+                'Lawrence D\'Oliveiro',
             ]
           )
         dlg.set_license \
