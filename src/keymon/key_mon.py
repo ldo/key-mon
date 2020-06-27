@@ -438,75 +438,78 @@ class KeyMon:
             self.window.move(old_x, old_y)
         #end if
         self.window.show()
+        self.update_shape_mask(force=True)
     #end create_window
 
     def update_shape_mask(self, *unused_args, **kwargs):
-        if not self.options.backgroundless:
-            return
-        force = kwargs.get('force', False)
-
-        btns = [btn for btn in self.buttons if btn.get_visible()]
-        # Generate id to see if current mask needs to be updated, which is a tuple
-        # of allocation of buttons.
-        cache_id = tuple \
-          (
-            (a.x, a.y, a.width, a.height)
-            for btn in btns
-            for a in (btn.get_allocation(),)
-          )
-        if cache_id == self.shape_mask_current and not force:
-            return
-
-        # Try to find existing mask in cache
-        # TODO limit number of cached masks
-        shape_mask = self.shape_mask_cache.get(cache_id, None)
-        if shape_mask and not force:
-            self.window.get_property("window").shape_combine_region(shape_mask, 0, 0)
-            self.shape_mask_current = cache_id
-            return
-        #end if
-
-        alloc = self.window.get_allocation()
-        width = alloc.width
-        height = alloc.height
-        masks = \
-            [
-                Gdk.cairo_surface_create_from_pixbuf(self.pixbufs.get(btn.current), 1, None)
-                for btn in btns
-            ]
-        shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
-          # not bothering to do equivalent of masks[0].get_depth()
-
-        gc = cairo.Context(shape_mask)
-        # Initialize the mask just in case masks of buttons can't fill the window,
-        # if that happens, some artifacts will be seen usually at right edge.
-        gc.set_source_rgba \
-          (
-            *(4 * ((1, 0)[self.options.backgroundless],))
-          )
-        gc.new_path()
-        gc.rectangle(0, 0, width, height)
-        gc.fill()
-
         gdk_window = self.window.get_property("window")
         if gdk_window == None :
             return
-        for btn_allocation, mask in zip(cache_id, masks):
-            # Don't create mask until every image is allocated
-            if btn_allocation[0] == -1:
-                return
-            gc.set_source_surface(mask, btn_allocation[0], btn_allocation[1])
-            gc.new_path()
-            gc.rectangle(*btn_allocation)
-            gc.fill()
-        #end for
+        if self.options.backgroundless:
+            force = kwargs.get('force', False)
 
-        gc = None
-        shape_mask.flush()
-        shape_mask = Gdk.cairo_region_create_from_surface(shape_mask)
-        gdk_window.shape_combine_region(shape_mask, 0, 0)
-        self.shape_mask_current = cache_id
-        self.shape_mask_cache[cache_id] = shape_mask
+            btns = [btn for btn in self.buttons if btn.get_visible()]
+            # Generate id to see if current mask needs to be updated, which is a tuple
+            # of allocation of buttons.
+            cache_id = tuple \
+              (
+                (a.x, a.y, a.width, a.height)
+                for btn in btns
+                for a in (btn.get_allocation(),)
+              )
+            if cache_id == self.shape_mask_current and not force:
+                return
+
+            # Try to find existing mask in cache
+            # TODO limit number of cached masks
+            shape_mask = self.shape_mask_cache.get(cache_id, None)
+            if shape_mask and not force:
+                self.window.get_property("window").shape_combine_region(shape_mask, 0, 0)
+                self.shape_mask_current = cache_id
+                return
+            #end if
+
+            alloc = self.window.get_allocation()
+            width = alloc.width
+            height = alloc.height
+            masks = \
+                [
+                    Gdk.cairo_surface_create_from_pixbuf(self.pixbufs.get(btn.current), 1, None)
+                    for btn in btns
+                ]
+            shape_mask = cairo.ImageSurface(cairo.Format.ARGB32, width, height)
+              # not bothering to do equivalent of masks[0].get_depth()
+
+            gc = cairo.Context(shape_mask)
+            # Initialize the mask just in case masks of buttons can't fill the window,
+            # if that happens, some artifacts will be seen usually at right edge.
+            gc.set_source_rgba \
+              (
+                *(4 * ((1, 0)[self.options.backgroundless],))
+              )
+            gc.new_path()
+            gc.rectangle(0, 0, width, height)
+            gc.fill()
+
+            for btn_allocation, mask in zip(cache_id, masks):
+                # Don't create mask until every image is allocated
+                if btn_allocation[0] == -1:
+                    return
+                gc.set_source_surface(mask, btn_allocation[0], btn_allocation[1])
+                gc.new_path()
+                gc.rectangle(*btn_allocation)
+                gc.fill()
+            #end for
+
+            gc = None
+            shape_mask.flush()
+            shape_mask = Gdk.cairo_region_create_from_surface(shape_mask)
+            gdk_window.shape_combine_region(shape_mask, 0, 0)
+            self.shape_mask_current = cache_id
+            self.shape_mask_cache[cache_id] = shape_mask
+        else :
+            gdk_window.shape_combine_region(None, 0, 0)
+        #end if
     #end update_shape_mask
 
     def create_images(self):
