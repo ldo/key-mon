@@ -257,12 +257,11 @@ class XEvents(threading.Thread):
             keysym = self.local_display.keycode_to_keysym(event.detail, 0)
             if keysym not in self.keycode_to_symbol:
                 print('Missing code for %d = %d' % (event.detail - 8, keysym))
-            else :
-                self.events.append \
-                  (
-                    XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value)
-                  )
             #end if
+            self.events.append \
+              (
+                XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value)
+              )
         #end handle_key
 
     #begin _handler
