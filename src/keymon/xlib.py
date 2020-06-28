@@ -36,45 +36,45 @@ import collections
 class XEvent:
     """An event, mimics edev.py events."""
 
-    def __init__(self, atype, scancode, code, value):
-        self._type = atype
+    def __init__(self, type, scancode, code, value):
+        self._type = type
         self._scancode = scancode
         self._code = code
         self._value = value
     #end __init__
 
-    def get_type(self):
-        """Get the type of event."""
+    @property
+    def type(self):
+        "the type of the event."
         return self._type
-    #end get_type
-    type = property(get_type)
+    #end type
 
-    def get_scancode(self):
-        """Get the scancode if any."""
+    @property
+    def scancode(self):
+        "the scancode if any."
         return self._scancode
-    #end get_scancode
-    scancode = property(get_scancode)
+    #end scancode
 
-    def get_code(self):
-        """Get the code string."""
+    @property
+    def code(self):
+        "the code string."
         return self._code
-    #end get_code
-    code = property(get_code)
+    #end code
 
-    def get_value(self):
-        """Get the value 0 for up, 1 for down, etc."""
+    @property
+    def value(self):
+        "the value: 0 for up, 1 for down, etc."
         return self._value
-    #end get_value
-    value = property(get_value)
+    #end value
 
-    def __str__(self):
+    def __repr__(self):
         return \
           (
-                'type:%s scancode:%s code:%s value:%s'
+                'XEvent(type:%s scancode:%s code:%s value:%s)'
             %
                 (self._type, self._scancode, self._code, self._value)
           )
-    #end __str__
+    #end __repr__
 
 #end XEvent
 
