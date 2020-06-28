@@ -88,6 +88,47 @@ class XEvents(threading.Thread):
         }
 
     def __init__(self):
+
+        def setup_lookup():
+            # sets up the key lookups.
+            # set locale to default C locale, see Issue 77.
+            # Use setlocale(None) to get curent locale instead of getlocal.
+            # See Issue 125 and http://bugs.python.org/issue1699853.
+            OLD_CTYPE = locale.setlocale(locale.LC_CTYPE, None)
+            locale.setlocale(locale.LC_CTYPE, 'C')
+            for name in dir(XK):
+                if name[:3] == "XK_":
+                    code = getattr(XK, name)
+                    self.keycode_to_symbol[code] = 'KEY_' + name[3:].upper()
+                #end if
+            #end for
+            locale.setlocale(locale.LC_CTYPE, OLD_CTYPE)
+            for key, value in \
+                (
+                    (65027, 'KEY_ISO_LEVEL3_SHIFT'),
+                    (269025062, 'KEY_BACK'),
+                    (269025063, 'KEY_FORWARD'),
+                    (16777215, 'KEY_CAPS_LOCK'),
+                    (269025067, 'KEY_WAKEUP'),
+                    # Multimedia keys
+                    (269025042, 'KEY_AUDIOMUTE'),
+                    (269025041, 'KEY_AUDIOLOWERVOLUME'),
+                    (269025043, 'KEY_AUDIORAISEVOLUME'),
+                    (269025047, 'KEY_AUDIONEXT'),
+                    (269025044, 'KEY_AUDIOPLAY'),
+                    (269025046, 'KEY_AUDIOPREV'),
+                    (269025045, 'KEY_AUDIOSTOP'),
+                    # Turkish / F layout
+                    (699, 'KEY_GBREVE'), # scancode = 26 / 18
+                    (697, 'KEY_IDOTLESS'), # scancode = 23 / 19
+                    (442, 'KEY_SCEDILLA'), # scancode = 39 / 40
+                ) \
+            :
+                self.keycode_to_symbol[key] = value
+            #end for
+        #end setup_lookup
+
+    #begin __init__
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self.setName('Xlib-thread')
@@ -96,7 +137,7 @@ class XEvents(threading.Thread):
         self.local_display = display.Display()
         self.ctx = None
         self.keycode_to_symbol = collections.defaultdict(lambda: 'KEY_DUNNO')
-        self._setup_lookup()
+        setup_lookup()
         self.events = []  # each of type XEvent
     #end __init__
 
@@ -105,44 +146,13 @@ class XEvents(threading.Thread):
         self.start_listening()
     #end run
 
-    def _setup_lookup(self):
-        """Setup the key lookups."""
-        # set locale to default C locale, see Issue 77.
-        # Use setlocale(None) to get curent locale instead of getlocal.
-        # See Issue 125 and http://bugs.python.org/issue1699853.
-        OLD_CTYPE = locale.setlocale(locale.LC_CTYPE, None)
-        locale.setlocale(locale.LC_CTYPE, 'C')
-        for name in dir(XK):
-            if name[:3] == "XK_":
-                code = getattr(XK, name)
-                self.keycode_to_symbol[code] = 'KEY_' + name[3:].upper()
-            #end if
-        #end for
-        locale.setlocale(locale.LC_CTYPE, OLD_CTYPE)
-        self.keycode_to_symbol[65027] = 'KEY_ISO_LEVEL3_SHIFT'
-        self.keycode_to_symbol[269025062] = 'KEY_BACK'
-        self.keycode_to_symbol[269025063] = 'KEY_FORWARD'
-        self.keycode_to_symbol[16777215] = 'KEY_CAPS_LOCK'
-        self.keycode_to_symbol[269025067] = 'KEY_WAKEUP'
-        # Multimedia keys
-        self.keycode_to_symbol[269025042] = 'KEY_AUDIOMUTE'
-        self.keycode_to_symbol[269025041] = 'KEY_AUDIOLOWERVOLUME'
-        self.keycode_to_symbol[269025043] = 'KEY_AUDIORAISEVOLUME'
-        self.keycode_to_symbol[269025047] = 'KEY_AUDIONEXT'
-        self.keycode_to_symbol[269025044] = 'KEY_AUDIOPLAY'
-        self.keycode_to_symbol[269025046] = 'KEY_AUDIOPREV'
-        self.keycode_to_symbol[269025045] = 'KEY_AUDIOSTOP'
-        # Turkish / F layout
-        self.keycode_to_symbol[699] = 'KEY_GBREVE'   # scancode = 26 / 18
-        self.keycode_to_symbol[697] = 'KEY_IDOTLESS' # scancode = 23 / 19
-        self.keycode_to_symbol[442] = 'KEY_SCEDILLA' # scancode = 39 / 40
-    #end _setup_lookup
-
     def next_event(self):
         """Returns the next event in queue, or None if none."""
-        if self.events:
+        try :
             return self.events.pop(0)
-        return None
+        except IndexError :
+            return None
+        #end try
     #end next_event
 
     def start_listening(self):
