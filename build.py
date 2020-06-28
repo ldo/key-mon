@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 #
 # Copyright 2010 Google Inc.
 #
@@ -75,7 +74,7 @@ def main():
   if options.png:
     build_screen_shots()
   elif not pybdist.handle_standard_options(options, setup):
-    print 'Doing nothing.  --help for commands.'
+    print('Doing nothing.  --help for commands.')
 
 if __name__ == '__main__':
   main()
