@@ -195,7 +195,66 @@ class XEvents(threading.Thread):
     #end listening
 
     def _handler(self, reply):
-        """Handle an event."""
+        # Handles an event.
+
+        def handle_mouse(event, value):
+            """Add a mouse event to events.
+            Params:
+              event: the event info
+              value: 2=motion, 1=down, 0=up
+            """
+            if value == 2:
+                self.events.append \
+                  (
+                      XEvent('EV_MOV', 0, 0, (event.root_x, event.root_y))
+                  )
+            elif event.detail in [4, 5]:
+                if event.detail == 5:
+                    value = -1
+                else:
+                    value = 1
+                #end if
+                self.events.append \
+                  (
+                      XEvent
+                        (
+                          'EV_REL',
+                          0,
+                          XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
+                          value
+                        )
+                  )
+            else:
+                self.events.append \
+                  (
+                      XEvent
+                        (
+                          'EV_KEY',
+                          0,
+                          XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
+                          value
+                        )
+                  )
+            #end if
+        #end handle_mouse
+
+        def handle_key(event, value):
+            """Add key event to events.
+            Params:
+              event: the event info
+              value: 1=down, 0=up
+            """
+            keysym = self.local_display.keycode_to_keysym(event.detail, 0)
+            if keysym not in self.keycode_to_symbol:
+                print('Missing code for %d = %d' % (event.detail - 8, keysym))
+            #end if
+            self.events.append \
+              (
+                XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value)
+              )
+        #end handle_key
+
+    #begin _handler
         if reply.category != record.FromServer:
             return
         if reply.client_swapped:
@@ -210,74 +269,20 @@ class XEvents(threading.Thread):
                 None
               )
             if event.type == X.ButtonPress:
-                self._handle_mouse(event, 1)
+                handle_mouse(event, 1)
             elif event.type == X.ButtonRelease:
-                self._handle_mouse(event, 0)
+                handle_mouse(event, 0)
             elif event.type == X.KeyPress:
-                self._handle_key(event, 1)
+                handle_key(event, 1)
             elif event.type == X.KeyRelease:
-                self._handle_key(event, 0)
+                handle_key(event, 0)
             elif event.type == X.MotionNotify:
-                self._handle_mouse(event, 2)
+                handle_mouse(event, 2)
             else:
                 print(event)
             #end if
         #end while
     #end _handler
-
-    def _handle_mouse(self, event, value):
-        """Add a mouse event to events.
-        Params:
-          event: the event info
-          value: 2=motion, 1=down, 0=up
-        """
-        if value == 2:
-            self.events.append \
-              (
-                  XEvent('EV_MOV', 0, 0, (event.root_x, event.root_y))
-              )
-        elif event.detail in [4, 5]:
-            if event.detail == 5:
-                value = -1
-            else:
-                value = 1
-            #end if
-            self.events.append \
-              (
-                  XEvent
-                    (
-                      'EV_REL',
-                      0,
-                      XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
-                      value
-                    )
-              )
-        else:
-            self.events.append \
-              (
-                  XEvent
-                    (
-                      'EV_KEY',
-                      0,
-                      XEvents._butn_to_code.get(event.detail, 'BTN_%d' % event.detail),
-                      value
-                    )
-              )
-        #end if
-    #end _handle_mouse
-
-    def _handle_key(self, event, value):
-        """Add key event to events.
-        Params:
-          event: the event info
-          value: 1=down, 0=up
-        """
-        keysym = self.local_display.keycode_to_keysym(event.detail, 0)
-        if keysym not in self.keycode_to_symbol:
-            print('Missing code for %d = %d' % (event.detail - 8, keysym))
-        #end if
-        self.events.append(XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value))
-    #end _handle_key
 
 #end XEvents
 
