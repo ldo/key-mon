@@ -35,46 +35,58 @@ import shutil
 import subprocess
 
 def build_screen_shots():
-  """Build the screenshots for key-mon."""
-  prog = '%s/%s' % (setup.DIR, setup.PY_SRC)
-  destdir = 'docs'
-  all_buttons = ['KEY_A', 'KEY_CONTROL_L', 'KEY_ALT_L', 'KEY_SHIFT_L']
-  todos = [
-    ('screenshot', [], all_buttons + ['BTN_LEFT']),
-    ('screenshot-blank', [], ['KEY_EMPTY']),
-    ('screenshot-smaller', ['--smaller'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-larger', ['--larger'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-apple', ['--theme', 'apple'], all_buttons + ['BTN_RIGHT']),
-    ('screenshot-oblivion', ['--theme', 'oblivion'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-modern', ['--theme', 'modern'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-big-letters', ['--theme', 'big-letters'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-clear', ['--theme', 'clear'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-clear-command', ['--theme', 'clear-command'], all_buttons + ['BTN_LEFT']),
-    ('screenshot-clear-ubuntu', ['--theme', 'clear-ubuntu'], all_buttons + ['BTN_LEFT']),
-    ('2x-no-mouse-meta', ['--nomouse', '--scale', '2.0', '--meta'], all_buttons + ['KEY_SUPER_L']),
-    ('old-keys-2', ['--noctrl', '--noalt', '--nomouse', '--old-keys', '2'],
-        ['KEY_Y', 'KEY_Y', 'KEY_P']),
-  ]
-  for fname, options, keys in todos:
+    """Build the screenshots for key-mon."""
+    prog = '%s/%s' % (setup.DIR, setup.PY_SRC)
+    destdir = 'docs'
+    all_buttons = ['KEY_A', 'KEY_CONTROL_L', 'KEY_ALT_L', 'KEY_SHIFT_L']
+    todos = \
+        [
+            ('screenshot', [], all_buttons + ['BTN_LEFT']),
+            ('screenshot-blank', [], ['KEY_EMPTY']),
+            ('screenshot-smaller', ['--smaller'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-larger', ['--larger'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-apple', ['--theme', 'apple'], all_buttons + ['BTN_RIGHT']),
+            ('screenshot-oblivion', ['--theme', 'oblivion'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-modern', ['--theme', 'modern'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-big-letters', ['--theme', 'big-letters'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-clear', ['--theme', 'clear'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-clear-command', ['--theme', 'clear-command'], all_buttons + ['BTN_LEFT']),
+            ('screenshot-clear-ubuntu', ['--theme', 'clear-ubuntu'], all_buttons + ['BTN_LEFT']),
+            ('2x-no-mouse-meta', ['--nomouse', '--scale', '2.0', '--meta'], all_buttons + ['KEY_SUPER_L']),
+            ('old-keys-2', ['--noctrl', '--noalt', '--nomouse', '--old-keys', '2'],
+                ['KEY_Y', 'KEY_Y', 'KEY_P']),
+        ]
+    for fname, options, keys in todos:
+        pybdist.clean_config(setup)
+        subprocess.call \
+          (
+            ['python', prog] + options + ['--screenshot', ','.join(keys)]
+          )
+        shutil.move('screenshot.png', os.path.join(destdir, fname + '.png'))
+    #end for
     pybdist.clean_config(setup)
-    subprocess.call([
-      'python', prog] + options + ['--screenshot', ','.join(keys)])
-    shutil.move('screenshot.png', os.path.join(destdir, fname + '.png'))
-  pybdist.clean_config(setup)
-
+#end build_screen_shots
 
 def main():
-  """Run the program, put here to make linter happy."""
-  parser = optparse.OptionParser()
-  parser.add_option('--png', dest='png', action='store_true',
-                    help='Only build png files')
-  pybdist.add_standard_options(parser, setup)
-  (options, unused_args) = parser.parse_args()
-
-  if options.png:
-    build_screen_shots()
-  elif not pybdist.handle_standard_options(options, setup):
-    print('Doing nothing.  --help for commands.')
+    """Run the program, put here to make linter happy."""
+    parser = optparse.OptionParser()
+    parser.add_option \
+      (
+        '--png',
+        dest='png',
+        action='store_true',
+        help='Only build png files'
+      )
+    pybdist.add_standard_options(parser, setup)
+    options, unused_args = parser.parse_args()
+    if options.png:
+        build_screen_shots()
+    elif not pybdist.handle_standard_options(options, setup):
+        print('Doing nothing.  --help for commands.')
+    #end if
+#end main
 
 if __name__ == '__main__':
-  main()
+    main()
+#end if
+
