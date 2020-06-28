@@ -82,10 +82,10 @@ class XEvents(threading.Thread):
     """A thread to queue up X window events from RECORD extension."""
 
     _butn_to_code = \
-      {
-          1: 'BTN_LEFT', 2: 'BTN_MIDDLE', 3: 'BTN_RIGHT',
-          4: 'REL_WHEEL', 5: 'REL_WHEEL', 6: 'REL_LEFT', 7: 'REL_RIGHT',
-      }
+        {
+            1: 'BTN_LEFT', 2: 'BTN_MIDDLE', 3: 'BTN_RIGHT',
+            4: 'REL_WHEEL', 5: 'REL_WHEEL', 6: 'REL_LEFT', 7: 'REL_RIGHT',
+        }
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -247,11 +247,12 @@ class XEvents(threading.Thread):
             keysym = self.local_display.keycode_to_keysym(event.detail, 0)
             if keysym not in self.keycode_to_symbol:
                 print('Missing code for %d = %d' % (event.detail - 8, keysym))
+            else :
+                self.events.append \
+                  (
+                    XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value)
+                  )
             #end if
-            self.events.append \
-              (
-                XEvent('EV_KEY', event.detail - 8, self.keycode_to_symbol[keysym], value)
-              )
         #end handle_key
 
     #begin _handler
