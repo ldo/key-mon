@@ -58,12 +58,14 @@ class TwoStateImage(Gtk.Image):
         return self.current != self.normal
     #end is_pressed
 
-    def get_really_pressed(self):
-        "Get the pressing state if a key is physically pressed."
+    @property
+    def really_pressed(self):
+        "The pressing state if a key is physically pressed."
         return self._really_pressed
-    #end get_really_pressed
+    #end really_pressed
 
-    def set_really_pressed(self, value):
+    @really_pressed.setter
+    def really_pressed(self, value):
         """Set if a key is physically pressed.
 
         This is different than is_pressed(), which is the pressing state of
@@ -71,14 +73,7 @@ class TwoStateImage(Gtk.Image):
         event comes in.
         """
         self._really_pressed = value
-    #end set_really_pressed
-    # Lint doesn't like @property.setter because of duplicate method names.
-    really_pressed = property \
-      (
-        fget = get_really_pressed,
-        fset = set_really_pressed,
-        doc = "Physically pressed button"
-      )
+    #end really_pressed
 
     def reset_time_if_pressed(self):
         """Start the countdown now."""
