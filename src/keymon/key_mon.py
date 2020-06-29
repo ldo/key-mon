@@ -484,10 +484,12 @@ class KeyMon:
     #end set_window_opacity
 
     def update_shape_mask(self, *unused_args, **kwargs):
+        "recalculates backgroundless/backgrounded window region."
         gdk_window = self.window.get_property("window")
         if gdk_window == None :
             return
-        if self.options.backgroundless:
+        if self.options.backgroundless > self.options.decorated :
+            # cannot be backgroundless if window decoration is visible
             force = kwargs.get('force', False)
 
             btns = [btn for btn in self.buttons if btn.get_visible()]
@@ -1012,6 +1014,9 @@ class KeyMon:
         """Toggle whether the window has chrome or not."""
         self.options.decorated = not self.options.decorated
         self.update_chrome()
+        if self.options.backgroundless :
+            self.update_shape_mask(force = True)
+        #end if
     #end toggle_chrome
 
     def show_settings_dlg(self, *unused_args):
