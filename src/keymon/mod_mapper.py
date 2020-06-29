@@ -326,8 +326,11 @@ def parse_kdb(text):
             continue
         grps = re_line.search(line)
         if grps:
-            ret.set_map(int(grps.group(1)), (grps.group(2), grps.group(3),
-                grps.group(4)))
+            ret.set_map \
+              (
+                int(grps.group(1)),
+                (grps.group(2), grps.group(3), grps.group(4))
+              )
         #end if
     #end for
     ret.done()
@@ -427,7 +430,7 @@ def safely_read_mod_map(fname, kbd_files):
             logging.warning('Can not find kbd file: %s' % fname)
         #end if
         if kbd_file:
-          return read_kdb(kbd_file)
+            return read_kdb(kbd_file)
     #end for
 
     ret = None

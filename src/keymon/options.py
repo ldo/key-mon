@@ -133,9 +133,13 @@ class OptionItem:
           )
         if self._ini_group:
             # Only need the --no version if it could be saved to ini file.
-            parser.add_option('--no' + self._opt_long.lstrip('-'),
-                    action='store_false',
-                    dest=self._dest, help=_('Opposite of %s') % self._opt_long)
+            parser.add_option \
+              (
+                '--no' + self._opt_long.lstrip('-'),
+                action='store_false',
+                dest=self._dest,
+                help=_('Opposite of %s') % self._opt_long
+              )
         #end if
     #end _add_bool_to_parser
 
@@ -398,8 +402,11 @@ class Options:
         for opt in self._options.values():
             if opt.ini_group:
                 checker[opt.ini_group + '-' + opt.ini_name] = True
-                if (config.has_section(opt.ini_group) and
-                    config.has_option(opt.ini_group, opt.ini_name)):
+                if (
+                        config.has_section(opt.ini_group)
+                    and
+                        config.has_option(opt.ini_group, opt.ini_name)
+                ) :
                     opt.value = config.get(opt.ini_group, opt.ini_name)
                     LOG.info('From ini getting %s.%s = %s', opt.ini_group, opt.ini_name, opt.value)
                 #end if
@@ -472,7 +479,7 @@ class Options:
         """Reset ini file to defaults."""
         for opt in self._options.values():
             if not opt.ini_group:
-              continue
+                continue
             opt.reset_to_default()
         #end for
     #end reset_to_defaults

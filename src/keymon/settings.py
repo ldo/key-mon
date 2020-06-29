@@ -482,10 +482,13 @@ def get_themes():
 def get_kbd_files():
     """Return a list of kbd file paths"""
     config_dirs = get_config_dirs('')
-    kbd_files = [
-        os.path.join(d, f) \
-        for d in config_dirs \
-        for f in sorted(os.listdir(d)) if f.endswith('.kbd')]
+    kbd_files = \
+        [
+            os.path.join(d, f)
+            for d in config_dirs
+            for f in sorted(os.listdir(d))
+            if f.endswith('.kbd')
+        ]
     return kbd_files
 #end get_kbd_files
 
