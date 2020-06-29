@@ -44,7 +44,7 @@ class TwoStateImage(Gtk.Image):
         self.defer_to = defer_to
         self.timeout_secs = DEFAULT_TIMEOUT_SECS
         self.switch_to(self.normal)
-        self._really_pressed = False
+        self.button_is_down = False
     #end __init__
 
     def reset_image(self, showit=True):
@@ -54,45 +54,29 @@ class TwoStateImage(Gtk.Image):
         self.showit = True
     #end reset_image
 
-    def is_pressed(self):
+    @property
+    def showing_button_down(self):
         "is the button currently showing the pressed state."
         return self.current != self.normal
-    #end is_pressed
-
-    @property
-    def really_pressed(self):
-        "The pressing state if a key is physically pressed."
-        return self._really_pressed
-    #end really_pressed
-
-    @really_pressed.setter
-    def really_pressed(self, value):
-        """Set if a key is physically pressed.
-
-        This is different than is_pressed(), which is the pressing state of
-        indicator, not reflect the real key pressing state. Should be set when key
-        event comes in.
-        """
-        self._really_pressed = value
-    #end really_pressed
+    #end showing_button_down
 
     def reset_time_if_pressed(self):
         """Start the countdown now."""
-        if self.is_pressed():
+        if self.showing_button_down :
             self.count_down = time.time()
         #end if
     #end reset_time_if_pressed
 
     def switch_to(self, name):
         """Switch to image with this name."""
-        if self.current != self.normal and self.defer_to:
+        if self.current != self.normal and self.defer_to != None :
             # pass my current image settings onto defer_to button.
             self._defer_to(self.current)
             # Make sure defer_to image will only start counting timeout after self
             # image has timed out.
-            if self.count_down:
+            if self.count_down != None :
                 self.defer_to.count_down = self.count_down + self.timeout_secs
-            else:
+            else :
                 self.defer_to.count_down += self.timeout_secs
             #end if
         #end if
@@ -104,7 +88,7 @@ class TwoStateImage(Gtk.Image):
         self.set_from_pixbuf(self.pixbufs.get(name))
         self.current = name
         self.count_down = None # stay with this image until further notice
-        if self.showit:
+        if self.showit :
             self.show()
         #end if
     #end _switch_to
@@ -126,7 +110,7 @@ class TwoStateImage(Gtk.Image):
                 if (
                         self.normal.replace('_EMPTY', '') in ('SHIFT', 'ALT', 'CTRL', 'META')
                     and
-                        self.really_pressed
+                        self.button_is_down
                 ) :
                     # modifier key still down, keep showing pressed image
                     pass

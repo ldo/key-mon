@@ -770,14 +770,14 @@ class KeyMon:
             return True
         if self.is_shift_code(name):
             return True
-        if (any(self.images[img].is_pressed() for img in self.MODS)):
+        if (any(self.images[img].showing_button_down for img in self.MODS)):
             return True
         return False
     #end _show_down_key
 
     def _handle_event(self, image, name, code):
         """Handle an event given image and code."""
-        image.really_pressed = code == 1
+        image.button_is_down = code == 1
         if code == 1:
             if self._show_down_key(name):
                 logging.debug('Switch to %s, code %s' % (name, code))
