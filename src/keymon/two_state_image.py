@@ -55,6 +55,7 @@ class TwoStateImage(Gtk.Image):
     #end reset_image
 
     def is_pressed(self):
+        "is the button currently showing the pressed state."
         return self.current != self.normal
     #end is_pressed
 
@@ -85,6 +86,7 @@ class TwoStateImage(Gtk.Image):
     def switch_to(self, name):
         """Switch to image with this name."""
         if self.current != self.normal and self.defer_to:
+            # pass my current image settings onto defer_to button.
             self._defer_to(self.current)
             # Make sure defer_to image will only start counting timeout after self
             # image has timed out.
@@ -98,45 +100,52 @@ class TwoStateImage(Gtk.Image):
     #end switch_to
 
     def _switch_to(self, name):
-        """Internal, switch to image with this name even if same."""
+        # Internal, switch to image with this name even if same.
         self.set_from_pixbuf(self.pixbufs.get(name))
         self.current = name
-        self.count_down = None
+        self.count_down = None # stay with this image until further notice
         if self.showit:
             self.show()
         #end if
     #end _switch_to
 
     def switch_to_default(self):
-        """Switch to the default image."""
+        "starts countdown for returning to the default image."
         self.count_down = time.time()
     #end switch_to_default
 
     def empty_event(self):
         """Sort of a idle event.
 
-        Returns True if image has been changed.
+        Returns True iff image has been changed back to normal.
         """
-        if self.count_down is None:
-            return
-        delta = time.time() - self.count_down
-        if delta > self.timeout_secs:
-            if self.normal.replace('_EMPTY', '') in ('SHIFT', 'ALT', 'CTRL', 'META') and \
-                self.really_pressed:
-                return
+        changed = False
+        if self.count_down != None :
+            delta = time.time() - self.count_down
+            if delta > self.timeout_secs :
+                if (
+                        self.normal.replace('_EMPTY', '') in ('SHIFT', 'ALT', 'CTRL', 'META')
+                    and
+                        self.really_pressed
+                ) :
+                    # modifier key still down, keep showing pressed image
+                    pass
+                else :
+                    self.count_down = None
+                    self._switch_to(self.normal)
+                    changed = True
+                #end if
             #end if
-            self.count_down = None
-            self._switch_to(self.normal)
-            return True
         #end if
+        return changed
     #end empty_event
 
     def _defer_to(self, old_name):
         """If possible the button is passed on."""
-        if not self.defer_to:
-            return
-        self.defer_to.switch_to(old_name)
-        self.defer_to.switch_to_default()
+        if self.defer_to != None :
+            self.defer_to.switch_to(old_name)
+            self.defer_to.switch_to_default()
+        #end if
     #end _defer_to
 
 #end TwoStateImage

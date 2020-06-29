@@ -1032,8 +1032,26 @@ class KeyMon:
 
     def settings_changed(self, unused_dlg):
         """Event received from the settings dialog."""
+
+        def toggle_a_key(name):
+            # Toggle show/hide a key.
+            show = self.get_option(cstrf(name.lower))
+            if self.enabled[name] == show:
+                # already in the right state
+                return
+            image = self.images[img]
+            image.showit = show
+            self.enabled[name] = show
+            if show:
+                image.switch_to_default()
+            else:
+                image.hide()
+            #end if
+        #end toggle_a_key
+
+    #begin settings_changed
         for img in self.IMAGES:
-            self._toggle_a_key(self.images[img], img, self.get_option(cstrf(img.lower)))
+            toggle_a_key(img)
         #end for
         self.create_buttons()
         self.layout_boxes()
@@ -1073,21 +1091,6 @@ class KeyMon:
             kbd_files = self.options.kbd_files
           )
     #end settings_changed
-
-    def _toggle_a_key(self, image, name, show):
-        """Toggle show/hide a key."""
-        if self.enabled[name] == show:
-            return
-        if show:
-            image.showit = True
-            self.enabled[name] = True
-            image.switch_to_default()
-        else:
-            image.showit = False
-            self.enabled[name] = False
-            image.hide()
-        #end if
-    #end _toggle_a_key
 
     def show_about_dlg(self, *_):
         dlg = Gtk.AboutDialog()
