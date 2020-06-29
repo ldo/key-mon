@@ -398,10 +398,10 @@ class Options:
 
         config = configparser.ConfigParser()
         config.readfp(fp)
-        checker = {}
+        checker = set()
         for opt in self._options.values():
             if opt.ini_group:
-                checker[opt.ini_group + '-' + opt.ini_name] = True
+                checker.add(opt.ini_group + '-' + opt.ini_name)
                 if (
                         config.has_section(opt.ini_group)
                     and
@@ -444,10 +444,8 @@ class Options:
     def read_ini_file(self, fname):
         self._ini_filename = os.path.expanduser(fname)
         LOG.info('Reading from %r', self._ini_filename)
-        if os.path.exists(self._ini_filename) and os.path.isfile(self._ini_filename):
-            fi = open(self._ini_filename)
-            self.parse_ini(fi)
-            fi.close()
+        if os.path.isfile(self._ini_filename):
+            self.parse_ini(open(self._ini_filename, "r"))
         else:
             LOG.info('%r does not exist', self._ini_filename)
         #end if

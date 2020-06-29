@@ -310,9 +310,8 @@ def _run_test():
             try:
                 evt = events.next_event()
             except KeyboardInterrupt:
-                # fixme: should set evt to None?
+                evt = None
                 print('User interrupted')
-                events.stop_listening() # fixme: done in finally-clause anyway
             #end try
             if evt:
                 print(evt)
