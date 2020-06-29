@@ -86,6 +86,9 @@ def cstrf(func):
 class KeyMon:
     """main KeyMon window class."""
 
+    # Fixme: all connects to instance methods as callbacks should
+    # use a weak ref to self to avoid reference circularity.
+
     def __init__(self, options):
         """Create the Key Mon window.
         Options dict:
@@ -95,6 +98,103 @@ class KeyMon:
           emulate_middle: Emulate the middle mouse button.
           theme: Name of the theme to use to draw keys
         """
+
+        def create_window():
+            # creates the main window.
+
+            def create_images():
+                self.images['MOUSE'] = two_state_image.TwoStateImage(self.pixbufs, 'MOUSE')
+                for img in self.MODS:
+                    self.images[img] = two_state_image.TwoStateImage \
+                      (
+                        pixbufs = self.pixbufs,
+                        normal = img + '_EMPTY',
+                        show = self.enabled[img]
+                      )
+                #end for
+                self.create_buttons()
+            #end create_images
+
+            def add_events():
+                # add events for the window to listen to.
+                self.window.connect('destroy', self.destroy)
+                self.window.connect('button-press-event', self.button_pressed)
+                self.window.connect('button-release-event', self.button_released)
+                self.window.connect('leave-notify-event', self.pointer_leave)
+                self.event_box.connect('button_release_event', self.right_click_handler)
+
+                accelgroup = Gtk.AccelGroup()
+                key, modifier = Gtk.accelerator_parse('<Control>q')
+                accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.quit_program)
+
+                key, modifier = Gtk.accelerator_parse('<Control>s')
+                accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.show_settings_dlg)
+                self.window.add_accel_group(accelgroup)
+
+                if self.options.screenshot:
+                    GLib.timeout_add(700, self.do_screenshot)
+                    return
+                #end if
+
+                GLib.idle_add(self.on_idle)
+            #end add_events
+
+        #begin create_window
+            self.window = Gtk.Window()
+            self.window.set_resizable(False)
+
+            self.window.set_title('Keyboard Status Monitor')
+            width, height = 30 * self.options.scale, 48 * self.options.scale
+            self.window.set_default_size(round(width), round(height))
+            self.window.set_decorated(self.options.decorated)
+
+            self.mouse_indicator_win = shaped_window.ShapedWindow \
+              (
+                self.svg_name('mouse-indicator'),
+                timeout=self.options.visible_click_timeout
+              )
+            self.mouse_follower_win = shaped_window.ShapedWindow \
+              (
+                self.svg_name('mouse-follower')
+              )
+            if self.options.follow_mouse:
+                self.mouse_follower_win.show()
+            #end if
+
+            self.window_style_provider = Gtk.CssProvider()
+            self.window.get_style_context() \
+                .add_provider(self.window_style_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+            self.set_window_opacity(self.options.opacity)
+            self.window.set_keep_above(True)
+
+            self.event_box = Gtk.EventBox()
+            self.window.add(self.event_box)
+            self.event_box.show()
+
+            create_images()
+
+            self.hbox = Gtk.HBox(homogeneous = False, spacing = 0)
+            self.event_box.add(self.hbox)
+
+            self.layout_boxes()
+            self.hbox.show()
+
+            add_events()
+
+            self.set_accept_focus(False)
+            self.window.set_skip_taskbar_hint(True)
+
+            old_x = self.options.x_pos
+            old_y = self.options.y_pos
+            if old_x != -1 and old_y != -1 and old_x and old_y:
+                self.window.move(old_x, old_y)
+            #end if
+            self.window.show()
+            self.update_shape_mask(force=True)
+        #end create_window
+
+    #begin __init__
         settings.SettingsDialog.register()
         self.btns = \
             [
@@ -133,7 +233,6 @@ class KeyMon:
         self.images = dict([(img, None) for img in self.IMAGES])
         self.enabled = dict([(img, self.get_option(cstrf(img.lower))) for img in self.IMAGES])
 
-
         self.options.kbd_files = settings.get_kbd_files()
         self.modmap = mod_mapper.safely_read_mod_map(self.options.kbd_file, self.options.kbd_files)
 
@@ -146,7 +245,7 @@ class KeyMon:
             name_fnames = self.name_fnames,
             resize = self.options.scale
           )
-        self.create_window()
+        create_window()
         self.fade_lock = 0
         self.reset_no_press_timer()
     #end __init__
@@ -384,62 +483,6 @@ class KeyMon:
         self.window_style_provider.load_from_data(style.encode())
     #end set_window_opacity
 
-    def create_window(self):
-        """Create the main window."""
-        self.window = Gtk.Window()
-        self.window.set_resizable(False)
-
-        self.window.set_title('Keyboard Status Monitor')
-        width, height = 30 * self.options.scale, 48 * self.options.scale
-        self.window.set_default_size(int(width), int(height))
-        self.window.set_decorated(self.options.decorated)
-
-        self.mouse_indicator_win = shaped_window.ShapedWindow \
-          (
-            self.svg_name('mouse-indicator'),
-            timeout=self.options.visible_click_timeout
-          )
-        self.mouse_follower_win = shaped_window.ShapedWindow \
-          (
-            self.svg_name('mouse-follower')
-          )
-        if self.options.follow_mouse:
-            self.mouse_follower_win.show()
-        #end if
-
-        self.window_style_provider = Gtk.CssProvider()
-        self.window.get_style_context() \
-            .add_provider(self.window_style_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
-        self.set_window_opacity(self.options.opacity)
-        self.window.set_keep_above(True)
-
-        self.event_box = Gtk.EventBox()
-        self.window.add(self.event_box)
-        self.event_box.show()
-
-        self.create_images()
-
-        self.hbox = Gtk.HBox(homogeneous = False, spacing = 0)
-        self.event_box.add(self.hbox)
-
-        self.layout_boxes()
-        self.hbox.show()
-
-        self.add_events()
-
-        self.set_accept_focus(False)
-        self.window.set_skip_taskbar_hint(True)
-
-        old_x = self.options.x_pos
-        old_y = self.options.y_pos
-        if old_x != -1 and old_y != -1 and old_x and old_y:
-            self.window.move(old_x, old_y)
-        #end if
-        self.window.show()
-        self.update_shape_mask(force=True)
-    #end create_window
-
     def update_shape_mask(self, *unused_args, **kwargs):
         gdk_window = self.window.get_property("window")
         if gdk_window == None :
@@ -511,19 +554,6 @@ class KeyMon:
         #end if
     #end update_shape_mask
 
-    def create_images(self):
-        self.images['MOUSE'] = two_state_image.TwoStateImage(self.pixbufs, 'MOUSE')
-        for img in self.MODS:
-            self.images[img] = two_state_image.TwoStateImage \
-              (
-                pixbufs = self.pixbufs,
-                normal = img + '_EMPTY',
-                show = self.enabled[img]
-              )
-        #end for
-        self.create_buttons()
-    #end create_images
-
     def create_buttons(self):
         self.buttons = list(self.images[img] for img in self.IMAGES)
         for _ in range(self.options.old_keys):
@@ -579,30 +609,6 @@ class KeyMon:
         #end if
         return fullname
     #end svg_name
-
-    def add_events(self):
-        """Add events for the window to listen to."""
-        self.window.connect('destroy', self.destroy)
-        self.window.connect('button-press-event', self.button_pressed)
-        self.window.connect('button-release-event', self.button_released)
-        self.window.connect('leave-notify-event', self.pointer_leave)
-        self.event_box.connect('button_release_event', self.right_click_handler)
-
-        accelgroup = Gtk.AccelGroup()
-        key, modifier = Gtk.accelerator_parse('<Control>q')
-        accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.quit_program)
-
-        key, modifier = Gtk.accelerator_parse('<Control>s')
-        accelgroup.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.show_settings_dlg)
-        self.window.add_accel_group(accelgroup)
-
-        if self.options.screenshot:
-            GLib.timeout_add(700, self.do_screenshot)
-            return
-        #end if
-
-        GLib.idle_add(self.on_idle)
-    #end add_events
 
     def button_released(self, unused_widget, evt):
         """A mouse button was released."""
