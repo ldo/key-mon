@@ -34,10 +34,11 @@ class TwoStateImage(Gtk.Image):
     """Image has a default image (say a blank image) which it goes back to.
     It can also pass the information down to another image."""
 
-    def __init__(self, pixbufs, normal, show=True, defer_to=None):
+    def __init__(self, pixbufs, normal, is_modifier, show = True, defer_to = None):
         Gtk.Image.__init__(self)
         self.pixbufs = pixbufs
         self.normal = normal
+        self.is_modifier = is_modifier
         self.count_down = None
         self.showit = show
         self.current = ''
@@ -104,21 +105,12 @@ class TwoStateImage(Gtk.Image):
         Returns True iff image has been changed back to normal.
         """
         changed = False
-        if self.count_down != None :
+        if not (self.is_modifier and self.button_is_down) and self.count_down != None :
             delta = time.time() - self.count_down
             if delta > self.timeout_secs :
-                if (
-                        self.normal.replace('_EMPTY', '') in ('SHIFT', 'ALT', 'CTRL', 'META')
-                    and
-                        self.button_is_down
-                ) :
-                    # modifier key still down, keep showing pressed image
-                    pass
-                else :
-                    self.count_down = None
-                    self._switch_to(self.normal)
-                    changed = True
-                #end if
+                self.count_down = None
+                self._switch_to(self.normal)
+                changed = True
             #end if
         #end if
         return changed

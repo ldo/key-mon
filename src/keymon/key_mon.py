@@ -103,12 +103,13 @@ class KeyMon:
             # creates the main window.
 
             def create_images():
-                self.images['MOUSE'] = two_state_image.TwoStateImage(self.pixbufs, 'MOUSE')
+                self.images['MOUSE'] = two_state_image.TwoStateImage(self.pixbufs, 'MOUSE', False)
                 for img in self.MODS:
                     self.images[img] = two_state_image.TwoStateImage \
                       (
                         pixbufs = self.pixbufs,
                         normal = img + '_EMPTY',
+                        is_modifier = True,
                         show = self.enabled[img]
                       )
                 #end for
@@ -559,10 +560,10 @@ class KeyMon:
     def create_buttons(self):
         self.buttons = list(self.images[img] for img in self.IMAGES)
         for _ in range(self.options.old_keys):
-            key_image = two_state_image.TwoStateImage(self.pixbufs, 'KEY_EMPTY')
+            key_image = two_state_image.TwoStateImage(self.pixbufs, 'KEY_EMPTY', False)
             self.buttons.append(key_image)
         #end for
-        self.key_image = two_state_image.TwoStateImage(self.pixbufs, 'KEY_EMPTY')
+        self.key_image = two_state_image.TwoStateImage(self.pixbufs, 'KEY_EMPTY', False)
         self.buttons.append(self.key_image)
         for but in self.buttons:
             if but.normal == 'MOUSE':
