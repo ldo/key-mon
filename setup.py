@@ -95,5 +95,5 @@ SETUP = dict \
   )
 
 if __name__ == '__main__':
-  setup(**SETUP)
+    setup(**SETUP)
 #end if
