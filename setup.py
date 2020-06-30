@@ -17,7 +17,6 @@
 from distutils.core import setup
 import gettext
 
-
 NAME = 'key-mon'
 DIR = 'src/keymon'
 gettext.install(NAME, DIR + '/locale')
@@ -44,43 +43,57 @@ COMMAND = '/usr/bin/%s' % NAME
 LANGS = ['pt_BR']
 HICOLOR_PNG_SIZES = [16, 24, 32, 48, 64, 128]
 
-SETUP = dict(
-  name=NAME,
-  version=VER,
-  packages=['keymon'],
-  package_dir={
-      'keymon': 'src/keymon'},
-  package_data = {
-      'keymon': [
-          'themes/**/*', '*.kbd',
-          'icons/key-mon.desktop', 'locale/**/*/*.mo'],
-  },
-  data_files = [
-      ('share/pixmaps', [ICON]),
-      ('share/icons/hicolor', ['icons/hicolor/%dx%d/apps/%s.png' % (x, x, NAME) for x in HICOLOR_PNG_SIZES]),
-      ('share/icons/hicolor', ['icons/hicolor/scalable/apps/%s.svg' % NAME]),
-  ],
-  scripts=['src/key-mon'],
-  author=AUTHOR_NAME,
-  author_email='scott+keymon@forusers.com',
-  platforms=['POSIX'],
-  license='Apache 2.0',
-  keywords=' '.join(KEYWORDS),
-  url='http://code.google.com/p/%s' % NAME,
-  download_url='http://%s.googlecode.com/files/%s-%s.zip' % (NAME, NAME, VER),
-  description=_('A screencast utility that displays your keyboard and mouse status'),
-  long_description=_("""Key-mon is useful for teaching since it shows the current status of your
-keyboard and mouse and you use them in another application.  No longer do you need to say
-'Now I'm pressing the Ctrl-D key', your students can just see the keystroke for themselves."""),
-  classifiers=[
-      'Development Status :: 5 - Production/Stable',
-      'Environment :: X11 Applications',
-      'Intended Audience :: Education',
-      'License :: OSI Approved :: Apache Software License',
-      'Operating System :: POSIX :: Linux',
-      'Topic :: Education :: Computer Aided Instruction (CAI)',
-  ],
-)
+SETUP = dict \
+  (
+    name=NAME,
+    version=VER,
+    packages=['keymon'],
+    package_dir={
+        'keymon': 'src/keymon'},
+    package_data =
+        {
+            'keymon':
+                [
+                    'themes/**/*', '*.kbd',
+                    'icons/key-mon.desktop',
+                    'locale/**/*/*.mo',
+                ],
+        },
+    data_files =
+        [
+            ('share/pixmaps', [ICON]),
+            (
+                'share/icons/hicolor',
+                ['icons/hicolor/%dx%d/apps/%s.png' % (x, x, NAME) for x in HICOLOR_PNG_SIZES],
+            ),
+            ('share/icons/hicolor', ['icons/hicolor/scalable/apps/%s.svg' % NAME]),
+        ],
+    scripts=['src/key-mon'],
+    author=AUTHOR_NAME,
+    author_email='scott+keymon@forusers.com',
+    platforms=['POSIX'],
+    license='Apache 2.0',
+    keywords=' '.join(KEYWORDS),
+    url='http://code.google.com/p/%s' % NAME,
+    download_url='http://%s.googlecode.com/files/%s-%s.zip' % (NAME, NAME, VER),
+    description=_('A screencast utility that displays your keyboard and mouse status'),
+    long_description=_(
+        "Key-mon is useful for teaching since it shows the current status of your" \
+        " keyboard and mouse and you use them in another application. No longer do you" \
+        " need to say 'Now I'm pressing the Ctrl-D key', your students can just see" \
+        " the keystroke for themselves."
+        ),
+    classifiers=
+        [
+            'Development Status :: 5 - Production/Stable',
+            'Environment :: X11 Applications',
+            'Intended Audience :: Education',
+            'License :: OSI Approved :: Apache Software License',
+            'Operating System :: POSIX :: Linux',
+            'Topic :: Education :: Computer Aided Instruction (CAI)',
+        ],
+  )
 
 if __name__ == '__main__':
   setup(**SETUP)
+#end if
