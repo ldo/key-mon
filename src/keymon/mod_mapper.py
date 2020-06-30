@@ -365,7 +365,6 @@ def run_cmd(args):
         subprocess.check_output \
           (
             args,
-            stdout=subprocess.PIPE,
             universal_newlines=True
           )
 #end run_cmd
