@@ -302,85 +302,85 @@ class KeyMon:
     #end do_screenshot
 
     def create_names_to_fnames(self):
-          """Give a name to images."""
-          if self.options.scale < 1.0:
-              self.svg_size = '-small'
-          else:
-              self.svg_size = ''
-          #end if
-          ftn = \
-              {
-                  'MOUSE': [self.svg_name('mouse'),],
-                  'BTN_MIDDLE': [self.svg_name('mouse'), self.svg_name('middle-mouse')],
-                  'SCROLL_UP': [self.svg_name('mouse'), self.svg_name('scroll-up-mouse')],
-                  'SCROLL_DOWN': [self.svg_name('mouse'), self.svg_name('scroll-dn-mouse')],
+        """Give a name to images."""
+        if self.options.scale < 1.0:
+            self.svg_size = '-small'
+        else:
+            self.svg_size = ''
+        #end if
+        ftn = \
+            {
+                'MOUSE': [self.svg_name('mouse'),],
+                'BTN_MIDDLE': [self.svg_name('mouse'), self.svg_name('middle-mouse')],
+                'SCROLL_UP': [self.svg_name('mouse'), self.svg_name('scroll-up-mouse')],
+                'SCROLL_DOWN': [self.svg_name('mouse'), self.svg_name('scroll-dn-mouse')],
 
-                  'REL_LEFT': [self.svg_name('mouse'), self.svg_name('scroll-lft-mouse')],
-                  'REL_RIGHT': [self.svg_name('mouse'), self.svg_name('scroll-rgt-mouse')],
-                  'SHIFT': [self.svg_name('shift')],
-                  'SHIFT_EMPTY': [self.svg_name('shift'), self.svg_name('whiteout-72')],
-                  'CTRL': [self.svg_name('ctrl')],
-                  'CTRL_EMPTY': [self.svg_name('ctrl'), self.svg_name('whiteout-58')],
-                  'META': [self.svg_name('meta'), self.svg_name('meta')],
-                  'META_EMPTY': [self.svg_name('meta'), self.svg_name('whiteout-58')],
-                  'ALT': [self.svg_name('alt')],
-                  'ALT_EMPTY': [self.svg_name('alt'), self.svg_name('whiteout-58')],
-                  'ALTGR': [self.svg_name('altgr')],
-                  'ALTGR_EMPTY': [self.svg_name('altgr'), self.svg_name('whiteout-58')],
-                  'KEY_EMPTY':
-                      [
-                          fix_svg_key_closure(self.svg_name('one-char-template'), [('&amp;', '')]),
-                          self.svg_name('whiteout-48'),
-                      ],
-                  'BTN_LEFTRIGHT':
-                      [
-                          self.svg_name('mouse'), self.svg_name('left-mouse'),
-                          self.svg_name('right-mouse'),
-                      ],
-                  'BTN_LEFTMIDDLERIGHT':
-                      [
-                          self.svg_name('mouse'), self.svg_name('left-mouse'),
-                          self.svg_name('middle-mouse'), self.svg_name('right-mouse'),
-                      ],
-              }
-          if self.options.swap_buttons:
-              # swap the meaning of left and right
-              left_str = 'right'
-              right_str = 'left'
-          else:
-              left_str = 'left'
-              right_str = 'right'
-          #end if
+                'REL_LEFT': [self.svg_name('mouse'), self.svg_name('scroll-lft-mouse')],
+                'REL_RIGHT': [self.svg_name('mouse'), self.svg_name('scroll-rgt-mouse')],
+                'SHIFT': [self.svg_name('shift')],
+                'SHIFT_EMPTY': [self.svg_name('shift'), self.svg_name('whiteout-72')],
+                'CTRL': [self.svg_name('ctrl')],
+                'CTRL_EMPTY': [self.svg_name('ctrl'), self.svg_name('whiteout-58')],
+                'META': [self.svg_name('meta'), self.svg_name('meta')],
+                'META_EMPTY': [self.svg_name('meta'), self.svg_name('whiteout-58')],
+                'ALT': [self.svg_name('alt')],
+                'ALT_EMPTY': [self.svg_name('alt'), self.svg_name('whiteout-58')],
+                'ALTGR': [self.svg_name('altgr')],
+                'ALTGR_EMPTY': [self.svg_name('altgr'), self.svg_name('whiteout-58')],
+                'KEY_EMPTY':
+                    [
+                        fix_svg_key_closure(self.svg_name('one-char-template'), [('&amp;', '')]),
+                        self.svg_name('whiteout-48'),
+                    ],
+                'BTN_LEFTRIGHT':
+                    [
+                        self.svg_name('mouse'), self.svg_name('left-mouse'),
+                        self.svg_name('right-mouse'),
+                    ],
+                'BTN_LEFTMIDDLERIGHT':
+                    [
+                        self.svg_name('mouse'), self.svg_name('left-mouse'),
+                        self.svg_name('middle-mouse'), self.svg_name('right-mouse'),
+                    ],
+            }
+        if self.options.swap_buttons:
+            # swap the meaning of left and right
+            left_str = 'right'
+            right_str = 'left'
+        else:
+            left_str = 'left'
+            right_str = 'right'
+        #end if
 
-          ftn.update \
-            (
-              {
-                  'BTN_RIGHT':
-                      [
-                          self.svg_name('mouse'),
-                          self.svg_name('%s-mouse' % right_str),
-                      ],
-                  'BTN_LEFT':
-                      [
-                          self.svg_name('mouse'),
-                          self.svg_name('%s-mouse' % left_str)
-                      ],
-                  'BTN_LEFTMIDDLE':
-                      [
-                          self.svg_name('mouse'),
-                          self.svg_name('%s-mouse' % left_str),
-                          self.svg_name('middle-mouse'),
-                      ],
-                  'BTN_MIDDLERIGHT':
-                      [
-                          self.svg_name('mouse'),
-                          self.svg_name('middle-mouse'),
-                          self.svg_name('%s-mouse' % right_str),
-                      ],
-              }
-            )
+        ftn.update \
+          (
+            {
+                'BTN_RIGHT':
+                    [
+                        self.svg_name('mouse'),
+                        self.svg_name('%s-mouse' % right_str),
+                    ],
+                'BTN_LEFT':
+                    [
+                        self.svg_name('mouse'),
+                        self.svg_name('%s-mouse' % left_str)
+                    ],
+                'BTN_LEFTMIDDLE':
+                    [
+                        self.svg_name('mouse'),
+                        self.svg_name('%s-mouse' % left_str),
+                        self.svg_name('middle-mouse'),
+                    ],
+                'BTN_MIDDLERIGHT':
+                    [
+                        self.svg_name('mouse'),
+                        self.svg_name('middle-mouse'),
+                        self.svg_name('%s-mouse' % right_str),
+                    ],
+            }
+          )
 
-          if self.options.scale >= 1.0:
+        if self.options.scale >= 1.0:
             ftn.update \
               (
                 {
@@ -434,38 +434,38 @@ class KeyMon:
                         ],
                 }
               )
-          else:
-              ftn.update \
-                (
-                  {
-                    'KEY_SPACE':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Space')]),
-                        ],
-                    'KEY_TAB':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Tab')]),
-                        ],
-                    'KEY_BACKSPACE':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Back')]),
-                        ],
-                    'KEY_RETURN':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Enter')]),
-                        ],
-                    'KEY_CAPS_LOCK':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Capslck')]),
-                        ],
-                    'KEY_MULTI_KEY':
-                        [
-                            fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Compose')]),
-                        ],
-                  }
-                )
-          #end if
-          return ftn
+        else:
+            ftn.update \
+              (
+                {
+                  'KEY_SPACE':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Space')]),
+                      ],
+                  'KEY_TAB':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Tab')]),
+                      ],
+                  'KEY_BACKSPACE':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Back')]),
+                      ],
+                  'KEY_RETURN':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Enter')]),
+                      ],
+                  'KEY_CAPS_LOCK':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Capslck')]),
+                      ],
+                  'KEY_MULTI_KEY':
+                      [
+                          fix_svg_key_closure(self.svg_name('one-line-wide'), [('&amp;', 'Compose')]),
+                      ],
+                }
+              )
+        #end if
+        return ftn
     #end create_names_to_fnames
 
     def set_window_opacity(self, opacity) :
