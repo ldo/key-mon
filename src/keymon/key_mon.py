@@ -74,15 +74,6 @@ def fix_svg_key_closure(fname, from_tos):
     return fix_svg_key
 #end fix_svg_key_closure
 
-def cstrf(func):
-    """Change locale before using str function"""
-    OLD_CTYPE = locale.getlocale(locale.LC_CTYPE)
-    locale.setlocale(locale.LC_CTYPE, 'C')
-    s = func()
-    locale.setlocale(locale.LC_CTYPE, OLD_CTYPE)
-    return s
-#end cstrf
-
 class KeyMon:
     """main KeyMon window class."""
 
@@ -232,7 +223,7 @@ class KeyMon:
         self.MODS = ['SHIFT', 'CTRL', 'META', 'ALT']
         self.IMAGES = ['MOUSE'] + self.MODS
         self.images = dict([(img, None) for img in self.IMAGES])
-        self.enabled = dict([(img, self.get_option(cstrf(img.lower))) for img in self.IMAGES])
+        self.enabled = dict([(img, self.get_option(img.lower())) for img in self.IMAGES])
 
         self.options.kbd_files = settings.get_kbd_files()
         self.modmap = mod_mapper.safely_read_mod_map(self.options.kbd_file, self.options.kbd_files)
@@ -1036,7 +1027,7 @@ class KeyMon:
 
         def toggle_a_key(name):
             # Toggle show/hide a key.
-            show = self.get_option(cstrf(name.lower))
+            show = self.get_option(name.lower())
             if self.enabled[name] == show:
                 # already in the right state
                 return
